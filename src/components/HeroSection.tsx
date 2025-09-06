@@ -2,8 +2,13 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Search, Shield, Users, MapPin, CheckCircle } from "lucide-react";
+import { useAuth } from "@/hooks/useAuth";
+import { useNavigate } from "react-router-dom";
 
 const HeroSection = () => {
+  const { user } = useAuth();
+  const navigate = useNavigate();
+
   return (
     <section className="relative min-h-[80vh] flex items-center justify-center bg-gradient-to-br from-background via-muted/20 to-secondary/30 overflow-hidden">
       {/* Background Elements */}
@@ -29,21 +34,46 @@ const HeroSection = () => {
               </span>
             </h1>
             <p className="text-lg md:text-xl text-muted-foreground max-w-2xl mx-auto leading-relaxed">
-              The trusted marketplace for Rutgers students to find apartments, sublets, and roommates. 
-              Verified listings, secure connections, no scams.
+              {user 
+                ? "Welcome back! Browse verified listings from fellow Rutgers students."
+                : "The trusted marketplace for Rutgers students to find apartments, sublets, and roommates. Verified listings, secure connections, no scams."
+              }
             </p>
           </div>
 
           {/* CTA Buttons */}
           <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
-            <Button size="lg" className="bg-gradient-hero hover:shadow-hero transition-all duration-300 transform hover:scale-105">
-              <Search className="h-5 w-5 mr-2" />
-              Browse Listings
-            </Button>
-            <Button size="lg" variant="outline" className="hover:bg-muted/50 transition-colors">
-              <Users className="h-5 w-5 mr-2" />
-              Find Roommates
-            </Button>
+            {user ? (
+              <>
+                <Button size="lg" className="bg-gradient-hero hover:shadow-hero transition-all duration-300 transform hover:scale-105">
+                  <Search className="h-5 w-5 mr-2" />
+                  Browse Listings
+                </Button>
+                <Button size="lg" variant="outline" className="hover:bg-muted/50 transition-colors">
+                  <Users className="h-5 w-5 mr-2" />
+                  Find Roommates
+                </Button>
+              </>
+            ) : (
+              <>
+                <Button 
+                  size="lg" 
+                  className="bg-gradient-hero hover:shadow-hero transition-all duration-300 transform hover:scale-105"
+                  onClick={() => navigate('/auth?tab=signup')}
+                >
+                  <Shield className="h-5 w-5 mr-2" />
+                  Join With .edu Email
+                </Button>
+                <Button 
+                  size="lg" 
+                  variant="outline" 
+                  className="hover:bg-muted/50 transition-colors"
+                  onClick={() => navigate('/auth')}
+                >
+                  Sign In
+                </Button>
+              </>
+            )}
           </div>
 
           {/* Stats Cards */}
