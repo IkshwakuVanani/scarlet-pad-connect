@@ -14,7 +14,6 @@ const Index = () => {
   return (
     <div className="min-h-screen bg-background">
       <Header />
-      <HeroSection />
       
       <SidebarProvider defaultOpen={false}>
         <div className="relative w-full">
@@ -28,9 +27,13 @@ const Index = () => {
           <div className="flex w-full">
             <AppSidebar onCampusChange={setSelectedCampus} />
             
-            <main className="flex-1 w-full">
-              <FeaturedListings />
-            </main>
+            {/* Main content with left padding to accommodate sidebar */}
+            <div className="flex-1 w-full pl-80">
+              <main className="max-w-6xl mx-auto px-6">
+                <HeroSection />
+                <FeaturedListings />
+              </main>
+            </div>
           </div>
         </div>
       </SidebarProvider>
