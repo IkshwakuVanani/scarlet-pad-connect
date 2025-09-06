@@ -70,7 +70,7 @@ const HeroSection = () => {
                   onClick={() => navigate('/auth?tab=signup')}
                 >
                   <Shield className="h-5 w-5 mr-2" />
-                  Join With .edu Email
+                  Sign Up
                 </Button>
                 <Button 
                   size="lg" 
