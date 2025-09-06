@@ -20,14 +20,8 @@ const Index = () => {
         <div className="relative w-full">
           {/* Floating Sidebar Trigger */}
           <div className="fixed left-4 top-1/2 transform -translate-y-1/2 z-50">
-            <SidebarTrigger asChild>
-              <Button 
-                variant="outline" 
-                size="icon"
-                className="bg-background/95 backdrop-blur shadow-lg border-2"
-              >
-                <Filter className="h-4 w-4" />
-              </Button>
+            <SidebarTrigger className="bg-background/95 backdrop-blur shadow-lg border-2 border-border rounded-md p-2 hover:bg-accent">
+              <Filter className="h-4 w-4" />
             </SidebarTrigger>
           </div>
           
