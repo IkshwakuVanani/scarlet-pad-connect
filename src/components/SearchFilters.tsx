@@ -72,7 +72,7 @@ const SearchFilters = ({ onCampusChange }: SearchFiltersProps) => {
                     <SelectValue placeholder="Select campus" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="">All Campuses</SelectItem>
+                    <SelectItem value="all-campuses">All Campuses</SelectItem>
                     {campuses.map((campus) => (
                       <SelectItem key={campus} value={campus}>
                         {campus}

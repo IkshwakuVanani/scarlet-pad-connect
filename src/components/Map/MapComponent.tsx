@@ -99,12 +99,12 @@ const MapComponent = ({ listings, selectedCampus, onListingSelect }: MapComponen
   }, [listings]);
 
   // Filter listings based on selected campus
-  const filteredListings = selectedCampus 
+  const filteredListings = selectedCampus && selectedCampus !== "all-campuses"
     ? listingsWithCoords.filter(listing => listing.campus === selectedCampus)
     : listingsWithCoords;
 
   // Calculate center point
-  const center = selectedCampus && RUTGERS_CAMPUSES[selectedCampus as keyof typeof RUTGERS_CAMPUSES]
+  const center = selectedCampus && selectedCampus !== "all-campuses" && RUTGERS_CAMPUSES[selectedCampus as keyof typeof RUTGERS_CAMPUSES]
     ? RUTGERS_CAMPUSES[selectedCampus as keyof typeof RUTGERS_CAMPUSES]
     : { lat: 40.5008, lng: -74.4474 }; // Default to College Avenue
 
@@ -112,7 +112,7 @@ const MapComponent = ({ listings, selectedCampus, onListingSelect }: MapComponen
     <div className="w-full h-[600px] rounded-lg overflow-hidden shadow-card border border-border">
       <MapContainer
         center={[center.lat, center.lng]}
-        zoom={selectedCampus ? 15 : 13}
+        zoom={selectedCampus && selectedCampus !== "all-campuses" ? 15 : 13}
         className="h-full w-full"
         scrollWheelZoom={true}
       >
@@ -124,7 +124,7 @@ const MapComponent = ({ listings, selectedCampus, onListingSelect }: MapComponen
         <MapViewController selectedCampus={selectedCampus} />
         
         {/* Campus markers */}
-        {!selectedCampus && Object.entries(RUTGERS_CAMPUSES).map(([campusName, coords]) => (
+        {(!selectedCampus || selectedCampus === "all-campuses") && Object.entries(RUTGERS_CAMPUSES).map(([campusName, coords]) => (
           <Marker
             key={campusName}
             position={[coords.lat, coords.lng]}
