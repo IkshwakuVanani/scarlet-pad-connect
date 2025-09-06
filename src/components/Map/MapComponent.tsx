@@ -28,9 +28,9 @@ const createListingIcon = (price: number) => {
   
   return L.divIcon({
     html: `
-      <div class="relative flex items-center justify-center w-8 h-8 rounded-full bg-white border-2 shadow-lg" style="border-color: ${color}">
-        <div class="w-3 h-3 rounded-full" style="background-color: ${color}"></div>
-        <div class="absolute -top-8 left-1/2 transform -translate-x-1/2 bg-white px-2 py-1 rounded text-xs font-semibold shadow-md" style="color: ${color}">
+      <div style="position: relative; display: flex; align-items: center; justify-content: center; width: 32px; height: 32px; border-radius: 50%; background: white; border: 2px solid ${color}; box-shadow: 0 2px 8px rgba(0,0,0,0.2);">
+        <div style="width: 12px; height: 12px; border-radius: 50%; background-color: ${color};"></div>
+        <div style="position: absolute; top: -32px; left: 50%; transform: translateX(-50%); background: white; padding: 4px 8px; border-radius: 4px; font-size: 12px; font-weight: 600; box-shadow: 0 2px 4px rgba(0,0,0,0.2); color: ${color}; white-space: nowrap;">
           $${price}
         </div>
       </div>
@@ -130,7 +130,7 @@ const MapComponent = ({ listings, selectedCampus, onListingSelect }: MapComponen
             position={[coords.lat, coords.lng]}
             icon={L.divIcon({
               html: `
-                <div class="flex items-center justify-center w-6 h-6 rounded-full bg-primary text-primary-foreground text-xs font-bold">
+                <div style="display: flex; align-items: center; justify-content: center; width: 24px; height: 24px; border-radius: 50%; background: hsl(0 100% 35%); color: white; font-size: 12px; font-weight: bold;">
                   R
                 </div>
               `,
