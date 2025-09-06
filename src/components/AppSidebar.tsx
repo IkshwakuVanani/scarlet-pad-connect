@@ -45,8 +45,8 @@ export function AppSidebar({ onCampusChange }: AppSidebarProps) {
   ];
 
   return (
-    <Sidebar className="w-80 border-r bg-background/95 backdrop-blur shadow-xl fixed left-0 top-16 h-[calc(100vh-4rem)] z-40">
-      <SidebarHeader className="p-6 border-b bg-background/95">
+    <Sidebar className="w-80 border-r bg-background shadow-xl h-screen sticky top-0">
+      <SidebarHeader className="p-6 border-b bg-background">
         <div className="text-center space-y-2">
           <h2 className="text-xl font-bold">Find Your Perfect Place</h2>
           <p className="text-sm text-muted-foreground">Filter by location, price, and preferences</p>
