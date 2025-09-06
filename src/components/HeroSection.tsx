@@ -12,7 +12,7 @@ const HeroSection = () => {
   return (
     <section className="relative min-h-[80vh] flex items-center justify-center bg-gradient-to-br from-background via-muted/20 to-secondary/30 overflow-hidden">
       {/* Background Elements */}
-      <div className="absolute inset-0 bg-gradient-hero opacity-5"></div>
+      <div className="absolute inset-0 bg-gradient-hero-cool"></div>
       <div className="absolute top-20 right-10 w-32 h-32 bg-primary/10 rounded-full blur-3xl"></div>
       <div className="absolute bottom-20 left-10 w-40 h-40 bg-success/10 rounded-full blur-3xl"></div>
       
