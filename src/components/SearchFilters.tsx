@@ -8,7 +8,11 @@ import { Slider } from "@/components/ui/slider";
 import { Search, Filter, MapPin, DollarSign, Calendar, Bus } from "lucide-react";
 import { useState } from "react";
 
-const SearchFilters = () => {
+interface SearchFiltersProps {
+  onCampusChange?: (campus: string) => void;
+}
+
+const SearchFilters = ({ onCampusChange }: SearchFiltersProps) => {
   const [priceRange, setPriceRange] = useState([400, 1200]);
   
   const campuses = [
@@ -63,13 +67,14 @@ const SearchFilters = () => {
                   <MapPin className="h-4 w-4 mr-1 text-primary" />
                   Campus Location
                 </Label>
-                <Select>
+                <Select onValueChange={onCampusChange}>
                   <SelectTrigger className="h-11">
                     <SelectValue placeholder="Select campus" />
                   </SelectTrigger>
                   <SelectContent>
+                    <SelectItem value="">All Campuses</SelectItem>
                     {campuses.map((campus) => (
-                      <SelectItem key={campus} value={campus.toLowerCase()}>
+                      <SelectItem key={campus} value={campus}>
                         {campus}
                       </SelectItem>
                     ))}
