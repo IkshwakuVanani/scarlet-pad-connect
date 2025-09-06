@@ -287,14 +287,7 @@ const GoogleMapComponent = ({ listings, selectedCampus, onListingSelect }: MapCo
 
 // Main component with wrapper
 const MapComponent = ({ listings, selectedCampus, onListingSelect }: MapComponentProps) => {
-  const [apiKey, setApiKey] = useState<string>('');
-
-  useEffect(() => {
-    const storedKey = localStorage.getItem('google_maps_api_key');
-    if (storedKey) {
-      setApiKey(storedKey);
-    }
-  }, []);
+  const apiKey = 'AIzaSyAOme9ISfJKOnLa4xten95q9xa23UEEinQ';
 
   const render = (status: Status) => {
     switch (status) {
@@ -309,9 +302,7 @@ const MapComponent = ({ listings, selectedCampus, onListingSelect }: MapComponen
         return <div className="w-full h-[600px] rounded-lg overflow-hidden shadow-card border border-border bg-background flex items-center justify-center">
           <div className="text-center space-y-2">
             <p className="text-sm text-destructive">Error loading Google Maps</p>
-            <Button onClick={() => setApiKey('')} variant="outline" size="sm">
-              Update API Key
-            </Button>
+            <p className="text-xs text-muted-foreground">Check API key and billing settings</p>
           </div>
         </div>;
       default:
@@ -322,10 +313,6 @@ const MapComponent = ({ listings, selectedCampus, onListingSelect }: MapComponen
         />;
     }
   };
-
-  if (!apiKey) {
-    return <ApiKeyInput onApiKeySet={setApiKey} />;
-  }
 
   return (
     <div className="w-full h-[600px] rounded-lg overflow-hidden shadow-card border border-border">
