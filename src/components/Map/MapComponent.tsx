@@ -60,22 +60,9 @@ interface MapComponentProps {
   onListingSelect?: (listingId: string) => void;
 }
 
-// Component to handle map view changes
-const MapViewController = ({ selectedCampus }: { selectedCampus?: string }) => {
-  const map = useMap();
-
-  useEffect(() => {
-    if (selectedCampus && RUTGERS_CAMPUSES[selectedCampus as keyof typeof RUTGERS_CAMPUSES]) {
-      const campus = RUTGERS_CAMPUSES[selectedCampus as keyof typeof RUTGERS_CAMPUSES];
-      map.setView([campus.lat, campus.lng], 15);
-    }
-  }, [selectedCampus, map]);
-
-  return null;
-};
-
 const MapComponent = ({ listings, selectedCampus, onListingSelect }: MapComponentProps) => {
   const [listingsWithCoords, setListingsWithCoords] = useState<ListingWithCoordinates[]>([]);
+  const [map, setMap] = useState<L.Map | null>(null);
 
   // Generate coordinates for listings based on campus
   useEffect(() => {
@@ -98,6 +85,14 @@ const MapComponent = ({ listings, selectedCampus, onListingSelect }: MapComponen
     setListingsWithCoords(listingsWithCoordinates);
   }, [listings]);
 
+  // Handle map view changes when campus selection changes
+  useEffect(() => {
+    if (map && selectedCampus && RUTGERS_CAMPUSES[selectedCampus as keyof typeof RUTGERS_CAMPUSES]) {
+      const campus = RUTGERS_CAMPUSES[selectedCampus as keyof typeof RUTGERS_CAMPUSES];
+      map.setView([campus.lat, campus.lng], 15);
+    }
+  }, [selectedCampus, map]);
+
   // Filter listings based on selected campus
   const filteredListings = selectedCampus 
     ? listingsWithCoords.filter(listing => listing.campus === selectedCampus)
@@ -115,13 +110,12 @@ const MapComponent = ({ listings, selectedCampus, onListingSelect }: MapComponen
         zoom={selectedCampus ? 15 : 13}
         className="h-full w-full"
         scrollWheelZoom={true}
+        ref={setMap}
       >
         <TileLayer
           attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
           url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
         />
-        
-        <MapViewController selectedCampus={selectedCampus} />
         
         {/* Campus markers */}
         {!selectedCampus && Object.entries(RUTGERS_CAMPUSES).map(([campusName, coords]) => (
