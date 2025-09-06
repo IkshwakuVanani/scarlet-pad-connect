@@ -7,11 +7,6 @@ import { Badge } from "@/components/ui/badge";
 import { Slider } from "@/components/ui/slider";
 import { Search, Filter, MapPin, DollarSign, Calendar, Bus } from "lucide-react";
 import { useState } from "react";
-import {
-  Sidebar,
-  SidebarContent,
-  SidebarHeader,
-} from "@/components/ui/sidebar";
 
 interface AppSidebarProps {
   onCampusChange?: (campus: string) => void;
@@ -45,15 +40,15 @@ export function AppSidebar({ onCampusChange }: AppSidebarProps) {
   ];
 
   return (
-    <Sidebar className="w-80 border-r bg-background shadow-xl h-screen sticky top-0">
-      <SidebarHeader className="p-6 border-b bg-background">
+    <div className="w-80 border-r bg-background shadow-xl h-screen sticky top-0 flex flex-col">
+      <div className="p-6 border-b bg-background">
         <div className="text-center space-y-2">
           <h2 className="text-xl font-bold">Find Your Perfect Place</h2>
           <p className="text-sm text-muted-foreground">Filter by location, price, and preferences</p>
         </div>
-      </SidebarHeader>
+      </div>
       
-      <SidebarContent className="p-6 overflow-y-auto">
+      <div className="p-6 overflow-y-auto flex-1">
         <div className="space-y-6">
           {/* Main Search Bar */}
           <div className="relative">
@@ -196,7 +191,7 @@ export function AppSidebar({ onCampusChange }: AppSidebarProps) {
             Search Properties
           </Button>
         </div>
-      </SidebarContent>
-    </Sidebar>
+      </div>
+    </div>
   );
 }
