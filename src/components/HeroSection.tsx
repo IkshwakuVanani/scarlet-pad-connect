@@ -45,7 +45,15 @@ const HeroSection = () => {
           <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
             {user ? (
               <>
-                <Button size="lg" className="bg-gradient-hero hover:shadow-hero transition-all duration-300 transform hover:scale-105">
+                <Button 
+                  size="lg" 
+                  className="bg-gradient-hero hover:shadow-hero transition-all duration-300 transform hover:scale-105"
+                  onClick={() => navigate('/map')}
+                >
+                  <MapPin className="h-5 w-5 mr-2" />
+                  View Map
+                </Button>
+                <Button size="lg" variant="outline" className="hover:bg-muted/50 transition-colors">
                   <Search className="h-5 w-5 mr-2" />
                   Browse Listings
                 </Button>
@@ -71,6 +79,15 @@ const HeroSection = () => {
                   onClick={() => navigate('/auth')}
                 >
                   Sign In
+                </Button>
+                <Button 
+                  size="lg" 
+                  variant="outline" 
+                  className="hover:bg-muted/50 transition-colors"
+                  onClick={() => navigate('/map')}
+                >
+                  <MapPin className="h-5 w-5 mr-2" />
+                  View Map
                 </Button>
               </>
             )}
