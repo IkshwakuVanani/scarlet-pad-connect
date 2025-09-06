@@ -28,8 +28,8 @@ const Index = () => {
             <AppSidebar onCampusChange={setSelectedCampus} />
             
             {/* Main content with left padding to accommodate sidebar */}
-            <div className="flex-1 w-full pl-80">
-              <main className="max-w-6xl mx-auto px-6">
+            <div className="flex-1 w-full pl-80 pr-0">
+              <main className="w-full px-0">
                 <HeroSection />
                 <FeaturedListings />
               </main>
