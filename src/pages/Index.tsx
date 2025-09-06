@@ -10,21 +10,22 @@ const Index = () => {
   const [selectedCampus, setSelectedCampus] = useState<string>("");
 
   return (
-    <SidebarProvider>
-      <div className="min-h-screen bg-background w-full flex">
-        <AppSidebar onCampusChange={setSelectedCampus} />
-        
-        <div className="flex-1 flex flex-col">
-          <Header />
+    <div className="min-h-screen bg-background">
+      <Header />
+      <HeroSection />
+      
+      <SidebarProvider>
+        <div className="w-full flex">
+          <AppSidebar onCampusChange={setSelectedCampus} />
+          
           <main className="flex-1">
-            <HeroSection />
             <FeaturedListings />
           </main>
         </div>
-        
-        <Toaster />
-      </div>
-    </SidebarProvider>
+      </SidebarProvider>
+      
+      <Toaster />
+    </div>
   );
 };
 
