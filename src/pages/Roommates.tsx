@@ -41,7 +41,10 @@ const Roommates = () => {
     try {
       const { data, error } = await supabase
         .from('listings')
-        .select('*')
+        .select(`
+          *,
+          profiles(full_name, email)
+        `)
         .order('created_at', { ascending: false });
 
       if (error) throw error;
@@ -58,7 +61,7 @@ const Roommates = () => {
         images: [], // Will implement image fetching later
         features: listing.features || [],
         leaseTerm: listing.lease_term || '',
-        postedBy: 'Student', // Will get from profiles later
+        postedBy: listing.profiles?.full_name || listing.profiles?.email || 'Student',
         isVerified: listing.is_verified,
         availableFrom: listing.available_from || '',
         busLines: listing.bus_lines || [],
@@ -67,7 +70,46 @@ const Roommates = () => {
       setListings(transformedListings);
     } catch (error) {
       console.error('Error fetching listings:', error);
-      setListings([]);
+      
+      // Fallback: fetch listings and profiles separately
+      try {
+        const { data: listingsData } = await supabase
+          .from('listings')
+          .select('*')
+          .order('created_at', { ascending: false });
+
+        const { data: profilesData } = await supabase
+          .from('profiles')
+          .select('user_id, full_name, email');
+
+        const profileMap = new Map();
+        profilesData?.forEach(profile => {
+          profileMap.set(profile.user_id, profile);
+        });
+
+        const transformedListings = (listingsData || []).map(listing => ({
+          id: listing.id,
+          title: listing.title,
+          price: listing.price,
+          location: listing.location,
+          campus: listing.campus || '',
+          bedrooms: listing.bedrooms,
+          bathrooms: listing.bathrooms,
+          images: [],
+          features: listing.features || [],
+          leaseTerm: listing.lease_term || '',
+          postedBy: profileMap.get(listing.user_id)?.full_name || 
+                   profileMap.get(listing.user_id)?.email || 'Student',
+          isVerified: listing.is_verified,
+          availableFrom: listing.available_from || '',
+          busLines: listing.bus_lines || [],
+        }));
+
+        setListings(transformedListings);
+      } catch (fallbackError) {
+        console.error('Fallback error:', fallbackError);
+        setListings([]);
+      }
     }
   };
 
