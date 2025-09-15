@@ -7,6 +7,7 @@ import ListingSearch from "./ListingSearch";
 import { ArrowRight, Star } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
+import { useNavigate } from "react-router-dom";
 
 interface Listing {
   id: string;
@@ -34,6 +35,7 @@ const FeaturedListings = ({ filters }: FeaturedListingsProps) => {
   const [filteredListings, setFilteredListings] = useState<Listing[]>([]);
   const [loading, setLoading] = useState(true);
   const { toast } = useToast();
+  const navigate = useNavigate();
 
   useEffect(() => {
     fetchListings();
@@ -276,7 +278,12 @@ const FeaturedListings = ({ filters }: FeaturedListingsProps) => {
         )}
 
         <div className="text-center">
-          <Button variant="hero" size="lg" className="group">
+          <Button 
+            variant="hero" 
+            size="lg" 
+            className="group"
+            onClick={() => navigate('/map')}
+          >
             View All Listings
             <ArrowRight className="h-5 w-5 ml-2 group-hover:translate-x-1 transition-transform" />
           </Button>
