@@ -275,8 +275,11 @@ const Profile = () => {
                             <div key={listing.id} className="relative">
                               <ListingCard listing={listing} />
                               <div className="absolute top-2 right-2 flex gap-2">
-                                <Badge variant="secondary">
-                                  {listing.isVerified ? "Verified" : "Pending"}
+                                <Badge 
+                                  variant={listing.isVerified ? "default" : "secondary"}
+                                  className={listing.isVerified ? "bg-green-500 text-white" : "bg-yellow-500 text-white"}
+                                >
+                                  {listing.isVerified ? "✓ Verified" : "⏳ Under Review"}
                                 </Badge>
                                 <Button
                                   variant="destructive"
