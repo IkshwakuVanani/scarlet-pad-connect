@@ -8,14 +8,53 @@ import { Slider } from "@/components/ui/slider";
 import { Search, Filter, MapPin, DollarSign, Calendar, Bus } from "lucide-react";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import React from "react";
 
 interface AppSidebarProps {
+  onFiltersChange?: (filters: any) => void;
   onCampusChange?: (campus: string) => void;
 }
 
-export function AppSidebar({ onCampusChange }: AppSidebarProps) {
+export function AppSidebar({ onFiltersChange, onCampusChange }: AppSidebarProps) {
+  const [searchText, setSearchText] = useState('');
+  const [selectedCampus, setSelectedCampus] = useState('');
+  const [leaseTerm, setLeaseTerm] = useState('');
+  const [busLine, setBusLine] = useState('');
+  const [propertyType, setPropertyType] = useState('');
   const [priceRange, setPriceRange] = useState([400, 1200]);
+  const [selectedFilters, setSelectedFilters] = useState<string[]>([]);
   const navigate = useNavigate();
+
+  // Emit filters whenever any filter changes
+  const emitFilters = () => {
+    const filters = {
+      search: searchText,
+      campus: selectedCampus === 'all-campuses' ? '' : selectedCampus,
+      leaseTerm: leaseTerm,
+      busLine: busLine,
+      propertyType: propertyType,
+      priceRange: priceRange,
+      features: selectedFilters,
+    };
+    onFiltersChange?.(filters);
+    // Also call legacy onCampusChange for backward compatibility
+    if (onCampusChange && selectedCampus) {
+      onCampusChange(selectedCampus);
+    }
+  };
+
+  // Call emitFilters whenever any filter changes
+  React.useEffect(() => {
+    emitFilters();
+  }, [searchText, selectedCampus, leaseTerm, busLine, propertyType, priceRange, selectedFilters]);
+
+  const handleQuickFilterToggle = (filter: string) => {
+    setSelectedFilters(prev => 
+      prev.includes(filter) 
+        ? prev.filter(f => f !== filter)
+        : [...prev, filter]
+    );
+  };
   
   const campuses = [
     "College Avenue",
@@ -58,6 +97,8 @@ export function AppSidebar({ onCampusChange }: AppSidebarProps) {
             <Input 
               placeholder="Search by address, neighborhood..."
               className="pl-10 h-12 text-base"
+              value={searchText}
+              onChange={(e) => setSearchText(e.target.value)}
             />
           </div>
 
@@ -67,7 +108,7 @@ export function AppSidebar({ onCampusChange }: AppSidebarProps) {
               <MapPin className="h-4 w-4 mr-1 text-primary" />
               Campus Location
             </Label>
-            <Select onValueChange={onCampusChange}>
+            <Select value={selectedCampus} onValueChange={setSelectedCampus}>
               <SelectTrigger className="h-11">
                 <SelectValue placeholder="Select campus" />
               </SelectTrigger>
@@ -88,7 +129,7 @@ export function AppSidebar({ onCampusChange }: AppSidebarProps) {
               <Calendar className="h-4 w-4 mr-1 text-primary" />
               Lease Term
             </Label>
-            <Select>
+            <Select value={leaseTerm} onValueChange={setLeaseTerm}>
               <SelectTrigger className="h-11">
                 <SelectValue placeholder="Select term" />
               </SelectTrigger>
@@ -108,7 +149,7 @@ export function AppSidebar({ onCampusChange }: AppSidebarProps) {
               <Bus className="h-4 w-4 mr-1 text-primary" />
               Bus Line Access
             </Label>
-            <Select>
+            <Select value={busLine} onValueChange={setBusLine}>
               <SelectTrigger className="h-11">
                 <SelectValue placeholder="Select bus line" />
               </SelectTrigger>
@@ -128,7 +169,7 @@ export function AppSidebar({ onCampusChange }: AppSidebarProps) {
               <Filter className="h-4 w-4 mr-1 text-primary" />
               Property Type
             </Label>
-            <Select>
+            <Select value={propertyType} onValueChange={setPropertyType}>
               <SelectTrigger className="h-11">
                 <SelectValue placeholder="Select type" />
               </SelectTrigger>
@@ -178,8 +219,9 @@ export function AppSidebar({ onCampusChange }: AppSidebarProps) {
               ].map((filter) => (
                 <Badge 
                   key={filter}
-                  variant="secondary" 
+                  variant={selectedFilters.includes(filter) ? "default" : "secondary"}
                   className="cursor-pointer hover:bg-primary hover:text-primary-foreground transition-colors text-xs"
+                  onClick={() => handleQuickFilterToggle(filter)}
                 >
                   {filter}
                 </Badge>
@@ -191,7 +233,10 @@ export function AppSidebar({ onCampusChange }: AppSidebarProps) {
           <Button 
             size="lg" 
             className="w-full bg-gradient-hero hover:shadow-hero transition-all duration-300"
-            onClick={() => navigate('/')}
+            onClick={() => {
+              emitFilters();
+              navigate('/');
+            }}
           >
             <Search className="h-5 w-5 mr-2" />
             Search Properties

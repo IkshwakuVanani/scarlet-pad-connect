@@ -25,7 +25,11 @@ interface Listing {
   is_verified: boolean;
 }
 
-const FeaturedListings = () => {
+interface FeaturedListingsProps {
+  filters?: any;
+}
+
+const FeaturedListings = ({ filters }: FeaturedListingsProps) => {
   const [listings, setListings] = useState<Listing[]>([]);
   const [filteredListings, setFilteredListings] = useState<Listing[]>([]);
   const [loading, setLoading] = useState(true);
@@ -35,13 +39,19 @@ const FeaturedListings = () => {
     fetchListings();
   }, []);
 
+  // Apply sidebar filters whenever they change
+  useEffect(() => {
+    if (filters) {
+      applySidebarFilters(filters);
+    }
+  }, [filters, listings]);
+
   const fetchListings = async () => {
     try {
       const { data, error } = await supabase
         .from('listings')
         .select('*')
-        .order('created_at', { ascending: false })
-        .limit(6);
+        .order('created_at', { ascending: false });
 
       if (error) throw error;
 
@@ -57,6 +67,75 @@ const FeaturedListings = () => {
     } finally {
       setLoading(false);
     }
+  };
+
+  const applySidebarFilters = (sidebarFilters: any) => {
+    let filtered = [...listings];
+
+    // Search filter
+    if (sidebarFilters.search) {
+      const searchLower = sidebarFilters.search.toLowerCase();
+      filtered = filtered.filter(listing => 
+        listing.title.toLowerCase().includes(searchLower) ||
+        listing.location.toLowerCase().includes(searchLower) ||
+        (listing.description && listing.description.toLowerCase().includes(searchLower))
+      );
+    }
+
+    // Campus filter
+    if (sidebarFilters.campus) {
+      filtered = filtered.filter(listing => listing.campus === sidebarFilters.campus);
+    }
+
+    // Lease term filter
+    if (sidebarFilters.leaseTerm) {
+      filtered = filtered.filter(listing => 
+        listing.lease_term && listing.lease_term.toLowerCase().includes(sidebarFilters.leaseTerm)
+      );
+    }
+
+    // Bus line filter
+    if (sidebarFilters.busLine) {
+      filtered = filtered.filter(listing => 
+        listing.bus_lines && listing.bus_lines.some(line => 
+          line.toLowerCase().includes(sidebarFilters.busLine.toLowerCase())
+        )
+      );
+    }
+
+    // Price range filter
+    if (sidebarFilters.priceRange) {
+      filtered = filtered.filter(listing => 
+        listing.price >= sidebarFilters.priceRange[0] && listing.price <= sidebarFilters.priceRange[1]
+      );
+    }
+
+    // Features filter (quick filters from sidebar)
+    if (sidebarFilters.features && sidebarFilters.features.length > 0) {
+      filtered = filtered.filter(listing => {
+        if (!listing.features) return false;
+        return sidebarFilters.features.some((feature: string) => {
+          // Map sidebar filter names to database feature names
+          const featureMapping: Record<string, string[]> = {
+            'Pet Friendly': ['Pet Friendly', 'Pets Allowed'],
+            'Parking Included': ['Parking', 'Parking Included'],
+            'Utilities Included': ['Utilities Included', 'All Utilities'],
+            'Furnished': ['Furnished', 'Fully Furnished'],
+            'Laundry In-Unit': ['Laundry', 'In-Unit Laundry', 'Washer/Dryer'],
+            'Near Campus': ['Near Campus', 'Walking Distance'],
+            'Available Now': ['Available Now', 'Immediate']
+          };
+          const mappedFeatures = featureMapping[feature] || [feature];
+          return mappedFeatures.some(mappedFeature => 
+            listing.features!.some(listingFeature => 
+              listingFeature.toLowerCase().includes(mappedFeature.toLowerCase())
+            )
+          );
+        });
+      });
+    }
+
+    setFilteredListings(filtered);
   };
 
   const handleFiltersChange = (filters: any) => {
@@ -184,7 +263,12 @@ const FeaturedListings = () => {
           </div>
         ) : (
           <div className="text-center py-12">
-            <p className="text-muted-foreground mb-4">No listings available yet.</p>
+            <p className="text-muted-foreground mb-4">
+              {filters && Object.values(filters).some(value => value && (Array.isArray(value) ? value.length > 0 : true))
+                ? "No listings match your search criteria."
+                : "No listings available yet."
+              }
+            </p>
             <Button variant="hero" asChild>
               <a href="/create-listing">Post the First Listing</a>
             </Button>

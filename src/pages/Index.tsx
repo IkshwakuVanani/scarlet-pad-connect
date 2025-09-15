@@ -6,20 +6,24 @@ import { Toaster } from "@/components/ui/toaster";
 import { useState } from "react";
 
 const Index = () => {
-  const [selectedCampus, setSelectedCampus] = useState<string>("");
+  const [filters, setFilters] = useState<any>({});
+
+  const handleFiltersChange = (newFilters: any) => {
+    setFilters(newFilters);
+  };
 
   return (
     <div className="min-h-screen bg-background">
       <Header />
       
       <div className="flex w-full">
-        <AppSidebar onCampusChange={setSelectedCampus} />
+        <AppSidebar onFiltersChange={handleFiltersChange} />
         
         {/* Main content flush with sidebar */}
         <div className="flex-1 w-full">
           <main className="w-full">
             <HeroSection />
-            <FeaturedListings />
+            <FeaturedListings filters={filters} />
           </main>
         </div>
       </div>
