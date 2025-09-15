@@ -36,7 +36,10 @@ const Header = () => {
         </div>
 
         <nav className="hidden md:flex items-center space-x-6">
-          <a href="#" onClick={() => navigate('/map')} className="text-sm font-medium text-foreground hover:text-primary transition-colors cursor-pointer">
+          <a href="#" onClick={() => navigate('/')} className="text-sm font-medium text-foreground hover:text-primary transition-colors cursor-pointer">
+            Home
+          </a>
+          <a href="#" onClick={() => navigate('/map')} className="text-sm font-medium text-muted-foreground hover:text-primary transition-colors cursor-pointer">
             Map View
           </a>
           {user && (
@@ -46,6 +49,9 @@ const Header = () => {
           )}
           <a href="#" onClick={() => navigate('/roommates')} className="text-sm font-medium text-muted-foreground hover:text-primary transition-colors cursor-pointer">
             Roommates
+          </a>
+          <a href="#" onClick={() => navigate('/about')} className="text-sm font-medium text-muted-foreground hover:text-primary transition-colors cursor-pointer">
+            About
           </a>
           <a href="#" onClick={() => navigate('/help')} className="text-sm font-medium text-muted-foreground hover:text-primary transition-colors cursor-pointer">
             Help
