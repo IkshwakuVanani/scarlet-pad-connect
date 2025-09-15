@@ -339,7 +339,7 @@ const ListingDetail = () => {
                           {profile?.full_name || 'Student'}
                         </div>
                         <div className="text-sm text-muted-foreground">
-                          {profile?.email}
+                          NetID: {profile?.email?.split('@')[0]}
                         </div>
                       </div>
                     </div>
