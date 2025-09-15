@@ -44,7 +44,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       return { error: new Error('Please use a valid .edu email address') };
     }
 
-    const redirectUrl = `${window.location.origin}/`;
+    const redirectUrl = `${window.location.origin}/auth`;
     
     const { error } = await supabase.auth.signUp({
       email,
