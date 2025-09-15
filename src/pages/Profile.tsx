@@ -6,11 +6,14 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Switch } from "@/components/ui/switch";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useAuth } from "@/hooks/useAuth";
+import { useTheme } from "@/hooks/useTheme";
 import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
-import { User, Home, Settings, Trash2, Shield, Clock } from "lucide-react";
+import { User, Home, Settings, Trash2, Shield, Clock, Moon, Sun, Laptop, Bell, Lock, Eye, Palette, Volume2 } from "lucide-react";
 import ListingCard from "@/components/ListingCard";
 
 interface Profile {
@@ -38,12 +41,16 @@ interface UserListing {
 
 const Profile = () => {
   const { user, signOut } = useAuth();
+  const { theme, setTheme, actualTheme } = useTheme();
   const [profile, setProfile] = useState<Profile | null>(null);
   const [userListings, setUserListings] = useState<UserListing[]>([]);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [fullName, setFullName] = useState("");
   const { toast } = useToast();
+  const [notifications, setNotifications] = useState(true);
+  const [emailUpdates, setEmailUpdates] = useState(false);
+  const [privacy, setPrivacy] = useState('public');
 
   useEffect(() => {
     if (user) {
@@ -320,34 +327,193 @@ const Profile = () => {
                 </TabsContent>
 
                 <TabsContent value="settings">
-                  <Card>
-                    <CardHeader>
-                      <CardTitle className="flex items-center gap-2">
-                        <Settings className="h-5 w-5" />
-                        Account Settings
-                      </CardTitle>
-                      <CardDescription>
-                        Manage your account preferences and security.
-                      </CardDescription>
-                    </CardHeader>
-                    <CardContent className="space-y-6">
-                      <div className="space-y-2">
-                        <Label>Account Status</Label>
-                        <Badge variant="default">Active</Badge>
-                      </div>
-                      
-                      <div className="space-y-2">
-                        <Label>Email Verification</Label>
-                        <Badge variant="default">Verified</Badge>
-                      </div>
+                  <div className="space-y-6">
+                    {/* Theme Settings */}
+                    <Card className="overflow-hidden bg-gradient-to-br from-card to-secondary/20 border-0 shadow-lg animate-fade-in">
+                      <CardHeader className="bg-gradient-to-r from-primary/5 to-primary/10 border-b">
+                        <CardTitle className="flex items-center gap-3">
+                          <div className="p-2 rounded-lg bg-primary/10">
+                            <Palette className="h-5 w-5 text-primary" />
+                          </div>
+                          Appearance & Theme
+                        </CardTitle>
+                        <CardDescription>
+                          Customize how the app looks and feels
+                        </CardDescription>
+                      </CardHeader>
+                      <CardContent className="p-6 space-y-6">
+                        <div className="space-y-3">
+                          <Label className="text-sm font-medium">Theme Preference</Label>
+                          <Select value={theme} onValueChange={setTheme}>
+                            <SelectTrigger className="w-full">
+                              <SelectValue />
+                            </SelectTrigger>
+                            <SelectContent>
+                              <SelectItem value="light" className="flex items-center gap-2">
+                                <Sun className="h-4 w-4" />
+                                Light Mode
+                              </SelectItem>
+                              <SelectItem value="dark" className="flex items-center gap-2">
+                                <Moon className="h-4 w-4" />
+                                Dark Mode
+                              </SelectItem>
+                              <SelectItem value="system" className="flex items-center gap-2">
+                                <Laptop className="h-4 w-4" />
+                                System Default
+                              </SelectItem>
+                            </SelectContent>
+                          </Select>
+                          <p className="text-xs text-muted-foreground">
+                            Currently using: <span className="font-medium capitalize">{actualTheme}</span> theme
+                          </p>
+                        </div>
+                      </CardContent>
+                    </Card>
 
-                      <div className="pt-6 border-t">
-                        <Button variant="destructive" onClick={signOut}>
-                          Sign Out
-                        </Button>
-                      </div>
-                    </CardContent>
-                  </Card>
+                    {/* Notification Settings */}
+                    <Card className="overflow-hidden bg-gradient-to-br from-card to-secondary/20 border-0 shadow-lg animate-fade-in">
+                      <CardHeader className="bg-gradient-to-r from-blue-500/5 to-blue-500/10 border-b">
+                        <CardTitle className="flex items-center gap-3">
+                          <div className="p-2 rounded-lg bg-blue-500/10">
+                            <Bell className="h-5 w-5 text-blue-500" />
+                          </div>
+                          Notifications
+                        </CardTitle>
+                        <CardDescription>
+                          Manage your notification preferences
+                        </CardDescription>
+                      </CardHeader>
+                      <CardContent className="p-6 space-y-6">
+                        <div className="flex items-center justify-between">
+                          <div className="space-y-1">
+                            <Label className="text-sm font-medium">Push Notifications</Label>
+                            <p className="text-xs text-muted-foreground">Get notified about new matches and messages</p>
+                          </div>
+                          <Switch 
+                            checked={notifications} 
+                            onCheckedChange={setNotifications}
+                            className="data-[state=checked]:bg-primary"
+                          />
+                        </div>
+                        
+                        <div className="flex items-center justify-between">
+                          <div className="space-y-1">
+                            <Label className="text-sm font-medium">Email Updates</Label>
+                            <p className="text-xs text-muted-foreground">Receive weekly digest of new listings</p>
+                          </div>
+                          <Switch 
+                            checked={emailUpdates} 
+                            onCheckedChange={setEmailUpdates}
+                            className="data-[state=checked]:bg-primary"
+                          />
+                        </div>
+                      </CardContent>
+                    </Card>
+
+                    {/* Privacy Settings */}
+                    <Card className="overflow-hidden bg-gradient-to-br from-card to-secondary/20 border-0 shadow-lg animate-fade-in">
+                      <CardHeader className="bg-gradient-to-r from-green-500/5 to-green-500/10 border-b">
+                        <CardTitle className="flex items-center gap-3">
+                          <div className="p-2 rounded-lg bg-green-500/10">
+                            <Lock className="h-5 w-5 text-green-500" />
+                          </div>
+                          Privacy & Security
+                        </CardTitle>
+                        <CardDescription>
+                          Control who can see your profile and listings
+                        </CardDescription>
+                      </CardHeader>
+                      <CardContent className="p-6 space-y-6">
+                        <div className="space-y-3">
+                          <Label className="text-sm font-medium">Profile Visibility</Label>
+                          <Select value={privacy} onValueChange={setPrivacy}>
+                            <SelectTrigger className="w-full">
+                              <SelectValue />
+                            </SelectTrigger>
+                            <SelectContent>
+                              <SelectItem value="public">
+                                <div className="flex items-center gap-2">
+                                  <Eye className="h-4 w-4" />
+                                  <span>Public - Visible to everyone</span>
+                                </div>
+                              </SelectItem>
+                              <SelectItem value="students">
+                                <div className="flex items-center gap-2">
+                                  <User className="h-4 w-4" />
+                                  <span>Students Only - Rutgers students only</span>
+                                </div>
+                              </SelectItem>
+                              <SelectItem value="private">
+                                <div className="flex items-center gap-2">
+                                  <Lock className="h-4 w-4" />
+                                  <span>Private - Hidden from search</span>
+                                </div>
+                              </SelectItem>
+                            </SelectContent>
+                          </Select>
+                        </div>
+                      </CardContent>
+                    </Card>
+
+                    {/* Account Status */}
+                    <Card className="overflow-hidden bg-gradient-to-br from-card to-secondary/20 border-0 shadow-lg animate-fade-in">
+                      <CardHeader className="bg-gradient-to-r from-orange-500/5 to-orange-500/10 border-b">
+                        <CardTitle className="flex items-center gap-3">
+                          <div className="p-2 rounded-lg bg-orange-500/10">
+                            <Settings className="h-5 w-5 text-orange-500" />
+                          </div>
+                          Account Status
+                        </CardTitle>
+                        <CardDescription>
+                          Your account information and verification status
+                        </CardDescription>
+                      </CardHeader>
+                      <CardContent className="p-6 space-y-4">
+                        <div className="flex items-center justify-between p-3 rounded-lg bg-success/5 border border-success/20">
+                          <div className="flex items-center gap-3">
+                            <div className="p-1.5 rounded-full bg-success/20">
+                              <Shield className="h-4 w-4 text-success" />
+                            </div>
+                            <div>
+                              <Label className="text-sm font-medium">Account Status</Label>
+                              <p className="text-xs text-muted-foreground">Your account is active and verified</p>
+                            </div>
+                          </div>
+                          <Badge variant="default" className="bg-success text-success-foreground">
+                            Active
+                          </Badge>
+                        </div>
+                        
+                        <div className="flex items-center justify-between p-3 rounded-lg bg-blue-500/5 border border-blue-500/20">
+                          <div className="flex items-center gap-3">
+                            <div className="p-1.5 rounded-full bg-blue-500/20">
+                              <User className="h-4 w-4 text-blue-500" />
+                            </div>
+                            <div>
+                              <Label className="text-sm font-medium">Email Verification</Label>
+                              <p className="text-xs text-muted-foreground">Your email has been verified</p>
+                            </div>
+                          </div>
+                          <Badge variant="default" className="bg-blue-500 text-white">
+                            Verified
+                          </Badge>
+                        </div>
+                        
+                        <div className="pt-4 border-t">
+                          <Button 
+                            variant="destructive" 
+                            onClick={signOut}
+                            className="w-full group hover-scale transition-all duration-300"
+                          >
+                            <div className="flex items-center gap-2">
+                              <Lock className="h-4 w-4 group-hover:rotate-12 transition-transform" />
+                              Sign Out
+                            </div>
+                          </Button>
+                        </div>
+                      </CardContent>
+                    </Card>
+                  </div>
                 </TabsContent>
               </Tabs>
             </div>
