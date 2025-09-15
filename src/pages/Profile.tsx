@@ -10,7 +10,7 @@ import { useAuth } from "@/hooks/useAuth";
 import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
-import { User, Home, Settings, Trash2 } from "lucide-react";
+import { User, Home, Settings, Trash2, Shield, Clock } from "lucide-react";
 import ListingCard from "@/components/ListingCard";
 
 interface Profile {
@@ -277,9 +277,23 @@ const Profile = () => {
                               <div className="absolute top-2 right-2 flex gap-2">
                                 <Badge 
                                   variant={listing.isVerified ? "default" : "secondary"}
-                                  className={listing.isVerified ? "bg-green-500 text-white" : "bg-yellow-500 text-white"}
+                                  className={
+                                    listing.isVerified 
+                                      ? "bg-emerald-500 text-white shadow-lg border-emerald-400" 
+                                      : "bg-gradient-to-r from-amber-400 to-orange-500 text-white shadow-lg border-0 animate-pulse"
+                                  }
                                 >
-                                  {listing.isVerified ? "✓ Verified" : "⏳ Under Review"}
+                                  {listing.isVerified ? (
+                                    <>
+                                      <Shield className="h-3 w-3 mr-1" />
+                                      Verified
+                                    </>
+                                  ) : (
+                                    <>
+                                      <Clock className="h-3 w-3 mr-1" />
+                                      Pending
+                                    </>
+                                  )}
                                 </Badge>
                                 <Button
                                   variant="destructive"
