@@ -53,6 +53,9 @@ const Header = () => {
           <a href="#" onClick={() => navigate('/about')} className="text-sm font-medium text-muted-foreground hover:text-primary transition-colors cursor-pointer">
             About
           </a>
+          <a href="#" onClick={() => navigate('/privacy')} className="text-sm font-medium text-muted-foreground hover:text-primary transition-colors cursor-pointer">
+            Privacy
+          </a>
           <a href="#" onClick={() => navigate('/help')} className="text-sm font-medium text-muted-foreground hover:text-primary transition-colors cursor-pointer">
             Help
           </a>

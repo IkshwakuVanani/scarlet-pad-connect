@@ -44,7 +44,7 @@ const Help = () => {
                     <Button 
                       variant="outline" 
                       size="sm"
-                      onClick={() => navigate('/create-listing')}
+                      onClick={() => navigate('/terms')}
                     >
                       View Guide
                     </Button>
