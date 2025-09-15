@@ -2,9 +2,9 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Heart, MapPin, Bed, Bath, Car, Wifi, Shield, Clock } from "lucide-react";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-
+import { supabase } from "@/integrations/supabase/client";
 interface ListingCardProps {
   listing: {
     id: string;
@@ -27,6 +27,26 @@ interface ListingCardProps {
 const ListingCard = ({ listing }: ListingCardProps) => {
   const [isFavorited, setIsFavorited] = useState(false);
   const navigate = useNavigate();
+  const [coverUrl, setCoverUrl] = useState<string | null>(null);
+
+  useEffect(() => {
+    let isMounted = true;
+    const load = async () => {
+      const { data: files, error } = await supabase.storage
+        .from('listing-images')
+        .list(`${listing.id}/`, { limit: 1 });
+      if (!error && files && files.length > 0) {
+        const { data } = supabase.storage
+          .from('listing-images')
+          .getPublicUrl(`${listing.id}/${files[0].name}`);
+        if (isMounted) setCoverUrl(data.publicUrl);
+      } else {
+        if (isMounted) setCoverUrl(null);
+      }
+    };
+    load();
+    return () => { isMounted = false; };
+  }, [listing.id]);
 
   const getFeatureIcon = (feature: string) => {
     switch (feature.toLowerCase()) {
@@ -42,9 +62,14 @@ const ListingCard = ({ listing }: ListingCardProps) => {
         {/* Image */}
         <div className="aspect-video bg-muted overflow-hidden">
           <img 
-            src={listing.images[0] || "/placeholder.svg"} 
+            src={coverUrl || listing.images[0] || "/placeholder.svg"}
             alt={listing.title}
             className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+            loading="lazy"
+            decoding="async"
+            onError={(e) => {
+              e.currentTarget.src = "/placeholder.svg";
+            }}
           />
         </div>
         
