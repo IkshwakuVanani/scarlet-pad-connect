@@ -8,9 +8,18 @@ import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+  DropdownMenuCheckboxItem,
+} from "@/components/ui/dropdown-menu";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
-import { Upload, X, Plus } from "lucide-react";
+import { Upload, X, Plus, ChevronDown, Check, MapPin, Home, Bus, Sparkles } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
 
 const createListingSchema = z.object({
@@ -40,6 +49,14 @@ const BUS_LINES = [
   "Route 1", "Route 18", "A", "B", "C", "EE", "F", "H", "LX", "REXB", "REXL"
 ];
 
+const LEASE_TERMS = [
+  "1 month", "3 months", "6 months", "9 months", "12 months", 
+  "Academic year", "Summer only", "Flexible"
+];
+
+const BEDROOM_OPTIONS = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
+const BATHROOM_OPTIONS = [0.5, 1, 1.5, 2, 2.5, 3, 3.5, 4, 4.5, 5, 6, 7, 8, 9, 10];
+
 export const CreateListingForm = () => {
   const { user } = useAuth();
   const { toast } = useToast();
@@ -47,12 +64,18 @@ export const CreateListingForm = () => {
   const [selectedBusLines, setSelectedBusLines] = useState<string[]>([]);
   const [selectedImages, setSelectedImages] = useState<File[]>([]);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [selectedCampus, setSelectedCampus] = useState<string>("");
+  const [selectedBedrooms, setSelectedBedrooms] = useState<number>(1);
+  const [selectedBathrooms, setSelectedBathrooms] = useState<number>(1);
+  const [selectedLeaseTerm, setSelectedLeaseTerm] = useState<string>("");
 
   const {
     register,
     handleSubmit,
     formState: { errors },
-    reset
+    reset,
+    setValue,
+    watch
   } = useForm<CreateListingForm>({
     resolver: zodResolver(createListingSchema),
     defaultValues: {
@@ -145,12 +168,12 @@ export const CreateListingForm = () => {
           title: data.title,
           price: data.price,
           location: data.location,
-          campus: data.campus,
-          bedrooms: data.bedrooms,
-          bathrooms: data.bathrooms,
+          campus: selectedCampus || data.campus,
+          bedrooms: selectedBedrooms,
+          bathrooms: selectedBathrooms,
           description: data.description,
           features: selectedFeatures,
-          lease_term: data.leaseTerm,
+          lease_term: selectedLeaseTerm || data.leaseTerm,
           available_from: data.availableFrom ? new Date(data.availableFrom).toISOString().split('T')[0] : null,
           bus_lines: selectedBusLines,
         })
@@ -174,6 +197,10 @@ export const CreateListingForm = () => {
       setSelectedFeatures([]);
       setSelectedBusLines([]);
       setSelectedImages([]);
+      setSelectedCampus("");
+      setSelectedBedrooms(1);
+      setSelectedBathrooms(1);
+      setSelectedLeaseTerm("");
 
     } catch (error) {
       console.error('Error creating listing:', error);
@@ -248,45 +275,119 @@ export const CreateListingForm = () => {
             </div>
 
             <div>
-              <Label htmlFor="campus">Campus</Label>
-              <select
-                id="campus"
-                {...register("campus")}
-                className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
-              >
-                <option value="">Select campus</option>
-                {CAMPUS_OPTIONS.map(campus => (
-                  <option key={campus} value={campus}>{campus}</option>
-                ))}
-              </select>
+              <Label>Campus</Label>
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button 
+                    variant="outline" 
+                    className="w-full justify-between font-normal"
+                  >
+                    <div className="flex items-center gap-2">
+                      <MapPin className="h-4 w-4 text-muted-foreground" />
+                      {selectedCampus || "Select campus"}
+                    </div>
+                    <ChevronDown className="h-4 w-4 opacity-50" />
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent className="w-full min-w-[200px]">
+                  <DropdownMenuLabel>Choose Campus</DropdownMenuLabel>
+                  <DropdownMenuSeparator />
+                  {CAMPUS_OPTIONS.map(campus => (
+                    <DropdownMenuItem 
+                      key={campus}
+                      onClick={() => {
+                        setSelectedCampus(campus);
+                        setValue("campus", campus);
+                      }}
+                      className="cursor-pointer"
+                    >
+                      <div className="flex items-center justify-between w-full">
+                        {campus}
+                        {selectedCampus === campus && <Check className="h-4 w-4" />}
+                      </div>
+                    </DropdownMenuItem>
+                  ))}
+                </DropdownMenuContent>
+              </DropdownMenu>
             </div>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
-              <Label htmlFor="bedrooms">Bedrooms</Label>
-              <Input
-                id="bedrooms"
-                type="number"
-                min="1"
-                max="10"
-                {...register("bedrooms", { valueAsNumber: true })}
-              />
+              <Label>Bedrooms</Label>
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button 
+                    variant="outline" 
+                    className="w-full justify-between font-normal"
+                  >
+                    <div className="flex items-center gap-2">
+                      <Home className="h-4 w-4 text-muted-foreground" />
+                      {selectedBedrooms} {selectedBedrooms === 1 ? 'Bedroom' : 'Bedrooms'}
+                    </div>
+                    <ChevronDown className="h-4 w-4 opacity-50" />
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent className="w-full">
+                  <DropdownMenuLabel>Number of Bedrooms</DropdownMenuLabel>
+                  <DropdownMenuSeparator />
+                  {BEDROOM_OPTIONS.map(bed => (
+                    <DropdownMenuItem 
+                      key={bed}
+                      onClick={() => {
+                        setSelectedBedrooms(bed);
+                        setValue("bedrooms", bed);
+                      }}
+                      className="cursor-pointer"
+                    >
+                      <div className="flex items-center justify-between w-full">
+                        {bed} {bed === 1 ? 'Bedroom' : 'Bedrooms'}
+                        {selectedBedrooms === bed && <Check className="h-4 w-4" />}
+                      </div>
+                    </DropdownMenuItem>
+                  ))}
+                </DropdownMenuContent>
+              </DropdownMenu>
               {errors.bedrooms && (
                 <p className="text-sm text-destructive mt-1">{errors.bedrooms.message}</p>
               )}
             </div>
 
             <div>
-              <Label htmlFor="bathrooms">Bathrooms</Label>
-              <Input
-                id="bathrooms"
-                type="number"
-                min="0.5"
-                max="10"
-                step="0.5"
-                {...register("bathrooms", { valueAsNumber: true })}
-              />
+              <Label>Bathrooms</Label>
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button 
+                    variant="outline" 
+                    className="w-full justify-between font-normal"
+                  >
+                    <div className="flex items-center gap-2">
+                      <Home className="h-4 w-4 text-muted-foreground" />
+                      {selectedBathrooms} {selectedBathrooms === 1 ? 'Bathroom' : 'Bathrooms'}
+                    </div>
+                    <ChevronDown className="h-4 w-4 opacity-50" />
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent className="w-full">
+                  <DropdownMenuLabel>Number of Bathrooms</DropdownMenuLabel>
+                  <DropdownMenuSeparator />
+                  {BATHROOM_OPTIONS.map(bath => (
+                    <DropdownMenuItem 
+                      key={bath}
+                      onClick={() => {
+                        setSelectedBathrooms(bath);
+                        setValue("bathrooms", bath);
+                      }}
+                      className="cursor-pointer"
+                    >
+                      <div className="flex items-center justify-between w-full">
+                        {bath} {bath === 1 ? 'Bathroom' : 'Bathrooms'}
+                        {selectedBathrooms === bath && <Check className="h-4 w-4" />}
+                      </div>
+                    </DropdownMenuItem>
+                  ))}
+                </DropdownMenuContent>
+              </DropdownMenu>
               {errors.bathrooms && (
                 <p className="text-sm text-destructive mt-1">{errors.bathrooms.message}</p>
               )}
@@ -305,12 +406,40 @@ export const CreateListingForm = () => {
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
-              <Label htmlFor="leaseTerm">Lease Term</Label>
-              <Input
-                id="leaseTerm"
-                {...register("leaseTerm")}
-                placeholder="e.g., 12 months, Academic year"
-              />
+              <Label>Lease Term</Label>
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button 
+                    variant="outline" 
+                    className="w-full justify-between font-normal"
+                  >
+                    <div className="flex items-center gap-2">
+                      <Home className="h-4 w-4 text-muted-foreground" />
+                      {selectedLeaseTerm || "Select lease term"}
+                    </div>
+                    <ChevronDown className="h-4 w-4 opacity-50" />
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent className="w-full">
+                  <DropdownMenuLabel>Lease Duration</DropdownMenuLabel>
+                  <DropdownMenuSeparator />
+                  {LEASE_TERMS.map(term => (
+                    <DropdownMenuItem 
+                      key={term}
+                      onClick={() => {
+                        setSelectedLeaseTerm(term);
+                        setValue("leaseTerm", term);
+                      }}
+                      className="cursor-pointer"
+                    >
+                      <div className="flex items-center justify-between w-full">
+                        {term}
+                        {selectedLeaseTerm === term && <Check className="h-4 w-4" />}
+                      </div>
+                    </DropdownMenuItem>
+                  ))}
+                </DropdownMenuContent>
+              </DropdownMenu>
             </div>
 
             <div>
@@ -326,35 +455,103 @@ export const CreateListingForm = () => {
           {/* Features */}
           <div>
             <Label>Features & Amenities</Label>
-            <div className="flex flex-wrap gap-2 mt-2">
-              {COMMON_FEATURES.map(feature => (
-                <Badge
-                  key={feature}
-                  variant={selectedFeatures.includes(feature) ? "default" : "outline"}
-                  className="cursor-pointer"
-                  onClick={() => toggleFeature(feature)}
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button 
+                  variant="outline" 
+                  className="w-full justify-between font-normal mt-2"
                 >
-                  {feature}
-                </Badge>
-              ))}
-            </div>
+                  <div className="flex items-center gap-2">
+                    <Sparkles className="h-4 w-4 text-muted-foreground" />
+                    {selectedFeatures.length > 0 
+                      ? `${selectedFeatures.length} features selected`
+                      : "Select features & amenities"
+                    }
+                  </div>
+                  <ChevronDown className="h-4 w-4 opacity-50" />
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent className="w-full min-w-[300px]">
+                <DropdownMenuLabel>Available Features</DropdownMenuLabel>
+                <DropdownMenuSeparator />
+                {COMMON_FEATURES.map(feature => (
+                  <DropdownMenuCheckboxItem 
+                    key={feature}
+                    checked={selectedFeatures.includes(feature)}
+                    onCheckedChange={() => toggleFeature(feature)}
+                    className="cursor-pointer"
+                  >
+                    {feature}
+                  </DropdownMenuCheckboxItem>
+                ))}
+              </DropdownMenuContent>
+            </DropdownMenu>
+            {selectedFeatures.length > 0 && (
+              <div className="flex flex-wrap gap-2 mt-2">
+                {selectedFeatures.map(feature => (
+                  <Badge
+                    key={feature}
+                    variant="default"
+                    className="cursor-pointer"
+                    onClick={() => toggleFeature(feature)}
+                  >
+                    {feature}
+                    <X className="h-3 w-3 ml-1" />
+                  </Badge>
+                ))}
+              </div>
+            )}
           </div>
 
           {/* Bus Lines */}
           <div>
             <Label>Nearby Bus Lines</Label>
-            <div className="flex flex-wrap gap-2 mt-2">
-              {BUS_LINES.map(busLine => (
-                <Badge
-                  key={busLine}
-                  variant={selectedBusLines.includes(busLine) ? "default" : "outline"}
-                  className="cursor-pointer"
-                  onClick={() => toggleBusLine(busLine)}
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button 
+                  variant="outline" 
+                  className="w-full justify-between font-normal mt-2"
                 >
-                  {busLine}
-                </Badge>
-              ))}
-            </div>
+                  <div className="flex items-center gap-2">
+                    <Bus className="h-4 w-4 text-muted-foreground" />
+                    {selectedBusLines.length > 0 
+                      ? `${selectedBusLines.length} bus lines selected`
+                      : "Select nearby bus lines"
+                    }
+                  </div>
+                  <ChevronDown className="h-4 w-4 opacity-50" />
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent className="w-full min-w-[250px]">
+                <DropdownMenuLabel>Bus Routes</DropdownMenuLabel>
+                <DropdownMenuSeparator />
+                {BUS_LINES.map(busLine => (
+                  <DropdownMenuCheckboxItem 
+                    key={busLine}
+                    checked={selectedBusLines.includes(busLine)}
+                    onCheckedChange={() => toggleBusLine(busLine)}
+                    className="cursor-pointer"
+                  >
+                    Route {busLine}
+                  </DropdownMenuCheckboxItem>
+                ))}
+              </DropdownMenuContent>
+            </DropdownMenu>
+            {selectedBusLines.length > 0 && (
+              <div className="flex flex-wrap gap-2 mt-2">
+                {selectedBusLines.map(busLine => (
+                  <Badge
+                    key={busLine}
+                    variant="default"
+                    className="cursor-pointer"
+                    onClick={() => toggleBusLine(busLine)}
+                  >
+                    Route {busLine}
+                    <X className="h-3 w-3 ml-1" />
+                  </Badge>
+                ))}
+              </div>
+            )}
           </div>
 
           {/* Image Upload */}
