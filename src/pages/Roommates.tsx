@@ -39,55 +39,30 @@ const Roommates = () => {
 
   const fetchListings = async () => {
     try {
-      const { data, error } = await supabase
+      // Fetch listings and profiles separately to avoid relation issues
+      const { data: listingsData, error: listingsError } = await supabase
         .from('listings')
-        .select(`
-          *,
-          profiles(full_name, email)
-        `)
+        .select('*')
         .order('created_at', { ascending: false });
 
-      if (error) throw error;
+      if (listingsError) throw listingsError;
+
+      const { data: profilesData, error: profilesError } = await supabase
+        .from('profiles')
+        .select('user_id, full_name, email');
+
+      if (profilesError) throw profilesError;
+
+      // Create a map of user profiles
+      const profileMap = new Map();
+      profilesData?.forEach(profile => {
+        profileMap.set(profile.user_id, profile);
+      });
 
       // Transform to match expected format
-      const transformedListings = (data || []).map(listing => ({
-        id: listing.id,
-        title: listing.title,
-        price: listing.price,
-        location: listing.location,
-        campus: listing.campus || '',
-        bedrooms: listing.bedrooms,
-        bathrooms: listing.bathrooms,
-        images: [], // Will implement image fetching later
-        features: listing.features || [],
-        leaseTerm: listing.lease_term || '',
-        postedBy: listing.profiles?.full_name || listing.profiles?.email || 'Student',
-        isVerified: listing.is_verified,
-        availableFrom: listing.available_from || '',
-        busLines: listing.bus_lines || [],
-      }));
-
-      setListings(transformedListings);
-    } catch (error) {
-      console.error('Error fetching listings:', error);
-      
-      // Fallback: fetch listings and profiles separately
-      try {
-        const { data: listingsData } = await supabase
-          .from('listings')
-          .select('*')
-          .order('created_at', { ascending: false });
-
-        const { data: profilesData } = await supabase
-          .from('profiles')
-          .select('user_id, full_name, email');
-
-        const profileMap = new Map();
-        profilesData?.forEach(profile => {
-          profileMap.set(profile.user_id, profile);
-        });
-
-        const transformedListings = (listingsData || []).map(listing => ({
+      const transformedListings = (listingsData || []).map(listing => {
+        const userProfile = profileMap.get(listing.user_id);
+        return {
           id: listing.id,
           title: listing.title,
           price: listing.price,
@@ -95,21 +70,20 @@ const Roommates = () => {
           campus: listing.campus || '',
           bedrooms: listing.bedrooms,
           bathrooms: listing.bathrooms,
-          images: [],
+          images: [], // Will implement image fetching later
           features: listing.features || [],
           leaseTerm: listing.lease_term || '',
-          postedBy: profileMap.get(listing.user_id)?.full_name || 
-                   profileMap.get(listing.user_id)?.email || 'Student',
+          postedBy: userProfile?.full_name || userProfile?.email || 'Student',
           isVerified: listing.is_verified,
           availableFrom: listing.available_from || '',
           busLines: listing.bus_lines || [],
-        }));
+        };
+      });
 
-        setListings(transformedListings);
-      } catch (fallbackError) {
-        console.error('Fallback error:', fallbackError);
-        setListings([]);
-      }
+      setListings(transformedListings);
+    } catch (error) {
+      console.error('Error fetching listings:', error);
+      setListings([]);
     }
   };
 
