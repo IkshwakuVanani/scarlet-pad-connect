@@ -40,7 +40,7 @@ const Header = () => {
             Map View
           </a>
           {user && (
-            <a href="#" className="text-sm font-medium text-muted-foreground hover:text-primary transition-colors">
+            <a href="#" onClick={() => navigate('/create-listing')} className="text-sm font-medium text-muted-foreground hover:text-primary transition-colors cursor-pointer">
               Post Listing
             </a>
           )}

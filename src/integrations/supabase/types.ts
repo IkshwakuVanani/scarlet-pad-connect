@@ -38,6 +38,63 @@ export type Database = {
         }
         Relationships: []
       }
+      listings: {
+        Row: {
+          available_from: string | null
+          bathrooms: number
+          bedrooms: number
+          bus_lines: string[] | null
+          campus: string | null
+          created_at: string
+          description: string | null
+          features: string[] | null
+          id: string
+          is_verified: boolean
+          lease_term: string | null
+          location: string
+          price: number
+          title: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          available_from?: string | null
+          bathrooms?: number
+          bedrooms?: number
+          bus_lines?: string[] | null
+          campus?: string | null
+          created_at?: string
+          description?: string | null
+          features?: string[] | null
+          id?: string
+          is_verified?: boolean
+          lease_term?: string | null
+          location: string
+          price: number
+          title: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          available_from?: string | null
+          bathrooms?: number
+          bedrooms?: number
+          bus_lines?: string[] | null
+          campus?: string | null
+          created_at?: string
+          description?: string | null
+          features?: string[] | null
+          id?: string
+          is_verified?: boolean
+          lease_term?: string | null
+          location?: string
+          price?: number
+          title?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
           created_at: string
