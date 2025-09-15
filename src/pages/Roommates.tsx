@@ -92,6 +92,14 @@ const Roommates = () => {
     if (!user) return;
 
     try {
+      // Fetch listings first to ensure we have the latest data
+      const { data: listingsData, error: listingsError } = await supabase
+        .from('listings')
+        .select('*')
+        .order('created_at', { ascending: false });
+
+      if (listingsError) throw listingsError;
+
       // Fetch all listing interests
       const { data: interests, error: interestsError } = await supabase
         .from('listing_interests')
@@ -120,7 +128,7 @@ const Roommates = () => {
         profiles: profileMap.get(interest.user_id) || null
       })) || [];
 
-      // Group interests by listing
+      // Group interests by listing using fresh listings data
       const grouped: GroupedInterests = {};
       const currentUserInterests = new Set<string>();
 
@@ -130,10 +138,28 @@ const Roommates = () => {
         }
 
         if (!grouped[interest.listing_id]) {
-          const listing = listings.find(l => l.id === interest.listing_id);
+          const listing = listingsData?.find(l => l.id === interest.listing_id);
           if (listing) {
+            // Transform listing to match expected format
+            const transformedListing = {
+              id: listing.id,
+              title: listing.title,
+              price: listing.price,
+              location: listing.location,
+              campus: listing.campus || '',
+              bedrooms: listing.bedrooms,
+              bathrooms: listing.bathrooms,
+              images: [],
+              features: listing.features || [],
+              leaseTerm: listing.lease_term || '',
+              postedBy: 'Student',
+              isVerified: listing.is_verified,
+              availableFrom: listing.available_from || '',
+              busLines: listing.bus_lines || [],
+            };
+            
             grouped[interest.listing_id] = {
-              listing,
+              listing: transformedListing,
               interestedUsers: []
             };
           }
@@ -228,12 +254,16 @@ const Roommates = () => {
   };
 
   useEffect(() => {
-    fetchListings();
-    if (user) {
-      fetchRoommateData();
-    } else {
-      setLoading(false);
-    }
+    const loadData = async () => {
+      await fetchListings();
+      if (user) {
+        await fetchRoommateData();
+      } else {
+        setLoading(false);
+      }
+    };
+    
+    loadData();
   }, [user]);
 
   if (!user) {
