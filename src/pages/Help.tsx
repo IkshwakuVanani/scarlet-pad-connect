@@ -5,8 +5,10 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { HelpCircle, Mail, MessageSquare, Shield, Home, Users, Search } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 
 const Help = () => {
+  const navigate = useNavigate();
   return (
     <div className="min-h-screen bg-background">
       <Header />
@@ -42,10 +44,7 @@ const Help = () => {
                     <Button 
                       variant="outline" 
                       size="sm"
-                      onClick={() => {
-                        const faqSection = document.querySelector('[value="item-2"]');
-                        faqSection?.scrollIntoView({ behavior: 'smooth' });
-                      }}
+                      onClick={() => navigate('/create-listing')}
                     >
                       View Guide
                     </Button>
@@ -64,10 +63,7 @@ const Help = () => {
                     <Button 
                       variant="outline" 
                       size="sm"
-                      onClick={() => {
-                        const faqSection = document.querySelector('[value="item-3"]');
-                        faqSection?.scrollIntoView({ behavior: 'smooth' });
-                      }}
+                      onClick={() => navigate('/roommates')}
                     >
                       Learn More
                     </Button>
@@ -86,10 +82,7 @@ const Help = () => {
                     <Button 
                       variant="outline" 
                       size="sm"
-                      onClick={() => {
-                        const emergencySection = document.querySelector('.border-destructive\\/50');
-                        emergencySection?.scrollIntoView({ behavior: 'smooth' });
-                      }}
+                      onClick={() => navigate('/terms')}
                     >
                       Safety Tips
                     </Button>
