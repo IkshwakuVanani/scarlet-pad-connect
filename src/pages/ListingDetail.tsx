@@ -44,6 +44,7 @@ const ListingDetail = () => {
   const [profile, setProfile] = useState<Profile | null>(null);
   const [loading, setLoading] = useState(true);
   const [isInterested, setIsInterested] = useState(false);
+  const [images, setImages] = useState<string[]>([]);
 
   useEffect(() => {
     if (id) {
@@ -73,6 +74,25 @@ const ListingDetail = () => {
 
       setListing(listingData);
       setProfile(profileData);
+
+      // Fetch listing images
+      const { data: imageList, error: imageError } = await supabase
+        .storage
+        .from('listing-images')
+        .list(`${id}/`, {
+          limit: 10,
+          offset: 0
+        });
+
+      if (!imageError && imageList) {
+        const imageUrls = imageList.map(file => {
+          const { data } = supabase.storage
+            .from('listing-images')
+            .getPublicUrl(`${id}/${file.name}`);
+          return data.publicUrl;
+        });
+        setImages(imageUrls);
+      }
 
       // Check if user is interested
       if (user) {
@@ -221,13 +241,24 @@ const ListingDetail = () => {
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
               {/* Main content */}
               <div className="lg:col-span-2 space-y-6">
-                {/* Image placeholder */}
+                {/* Images */}
                 <div className="aspect-video bg-muted rounded-lg overflow-hidden">
-                  <img 
-                    src="/placeholder.svg"
-                    alt={listing.title}
-                    className="w-full h-full object-cover"
-                  />
+                  {images && images.length > 0 ? (
+                    <img 
+                      src={images[0]}
+                      alt={listing.title}
+                      className="w-full h-full object-cover"
+                      onError={(e) => {
+                        e.currentTarget.src = "/placeholder.svg";
+                      }}
+                    />
+                  ) : (
+                    <img 
+                      src="/placeholder.svg"
+                      alt={listing.title}
+                      className="w-full h-full object-cover"
+                    />
+                  )}
                 </div>
 
                 {/* Title and basic info */}
