@@ -313,9 +313,10 @@ const Roommates = () => {
             {/* Available Listings to Join */}
             <div className="mb-8">
               <h2 className="text-xl font-semibold mb-4">Available Listings</h2>
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 {listings
                   .filter(listing => !selectedCampus || listing.campus === selectedCampus)
+                  .slice(0, 4)
                   .map((listing) => (
                   <Card key={listing.id} className="hover:shadow-lg transition-shadow">
                     <CardHeader className="pb-3">
@@ -341,10 +342,37 @@ const Roommates = () => {
                         </div>
                       </div>
                       
+                      {/* Enhanced details */}
+                      {listing.description && (
+                        <p className="text-sm text-muted-foreground mb-3 line-clamp-2">
+                          {listing.description}
+                        </p>
+                      )}
+                      
+                      {listing.features && listing.features.length > 0 && (
+                        <div className="flex flex-wrap gap-1 mb-3">
+                          {listing.features.slice(0, 3).map((feature, index) => (
+                            <Badge key={index} variant="outline" className="text-xs">
+                              {feature}
+                            </Badge>
+                          ))}
+                          {listing.features.length > 3 && (
+                            <Badge variant="outline" className="text-xs">
+                              +{listing.features.length - 3} more
+                            </Badge>
+                          )}
+                        </div>
+                      )}
+                      
                       <div className="flex justify-between items-center">
-                        <span className="text-sm text-muted-foreground">
-                          By {listing.postedBy}
-                        </span>
+                        <div className="flex flex-col">
+                          <span className="text-sm text-muted-foreground">
+                            By {listing.postedBy}
+                          </span>
+                          <span className="text-xs text-muted-foreground">
+                            Posted {new Date(listing.created_at).toLocaleDateString()}
+                          </span>
+                        </div>
                         <Button
                           variant={userInterests.has(listing.id) ? "default" : "outline"}
                           size="sm"
