@@ -6,7 +6,6 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Heart, MapPin, Users, Home } from "lucide-react";
-import { mockListings } from "@/data/mockListings";
 import Header from "@/components/Header";
 import { AppSidebar } from "@/components/AppSidebar";
 import { useToast } from "@/hooks/use-toast";
@@ -36,6 +35,41 @@ const Roommates = () => {
   const [groupedInterests, setGroupedInterests] = useState<GroupedInterests>({});
   const [userInterests, setUserInterests] = useState<Set<string>>(new Set());
   const [loading, setLoading] = useState(true);
+  const [listings, setListings] = useState<any[]>([]);
+
+  const fetchListings = async () => {
+    try {
+      const { data, error } = await supabase
+        .from('listings')
+        .select('*')
+        .order('created_at', { ascending: false });
+
+      if (error) throw error;
+
+      // Transform to match expected format
+      const transformedListings = (data || []).map(listing => ({
+        id: listing.id,
+        title: listing.title,
+        price: listing.price,
+        location: listing.location,
+        campus: listing.campus || '',
+        bedrooms: listing.bedrooms,
+        bathrooms: listing.bathrooms,
+        images: [], // Will implement image fetching later
+        features: listing.features || [],
+        leaseTerm: listing.lease_term || '',
+        postedBy: 'Student', // Will get from profiles later
+        isVerified: listing.is_verified,
+        availableFrom: listing.available_from || '',
+        busLines: listing.bus_lines || [],
+      }));
+
+      setListings(transformedListings);
+    } catch (error) {
+      console.error('Error fetching listings:', error);
+      setListings([]);
+    }
+  };
 
   const fetchRoommateData = async () => {
     if (!user) return;
@@ -79,7 +113,7 @@ const Roommates = () => {
         }
 
         if (!grouped[interest.listing_id]) {
-          const listing = mockListings.find(l => l.id === interest.listing_id);
+          const listing = listings.find(l => l.id === interest.listing_id);
           if (listing) {
             grouped[interest.listing_id] = {
               listing,
@@ -159,6 +193,7 @@ const Roommates = () => {
   };
 
   useEffect(() => {
+    fetchListings();
     if (user) {
       fetchRoommateData();
     } else {
@@ -214,7 +249,7 @@ const Roommates = () => {
             <div className="mb-8">
               <h2 className="text-xl font-semibold mb-4">Available Listings</h2>
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {mockListings
+                {listings
                   .filter(listing => !selectedCampus || listing.campus === selectedCampus)
                   .map((listing) => (
                   <Card key={listing.id} className="hover:shadow-lg transition-shadow">

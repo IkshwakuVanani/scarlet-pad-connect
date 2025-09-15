@@ -1,8 +1,8 @@
 import Header from "@/components/Header";
 import { AppSidebar } from "@/components/AppSidebar";
 import { MapComponent } from "@/components/Map";
-import { mockListings } from "@/data/mockListings";
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { supabase } from "@/integrations/supabase/client";
 import { ArrowLeft } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { SidebarProvider } from "@/components/ui/sidebar";
@@ -10,7 +10,46 @@ import { useNavigate } from "react-router-dom";
 
 const Map = () => {
   const [selectedCampus, setSelectedCampus] = useState<string>("");
+  const [listings, setListings] = useState<any[]>([]);
   const navigate = useNavigate();
+
+  useEffect(() => {
+    fetchListings();
+  }, []);
+
+  const fetchListings = async () => {
+    try {
+      const { data, error } = await supabase
+        .from('listings')
+        .select('*')
+        .order('created_at', { ascending: false });
+
+      if (error) throw error;
+
+      // Transform to match expected format
+      const transformedListings = (data || []).map(listing => ({
+        id: listing.id,
+        title: listing.title,
+        price: listing.price,
+        location: listing.location,
+        campus: listing.campus || '',
+        bedrooms: listing.bedrooms,
+        bathrooms: listing.bathrooms,
+        images: [], // Will implement image fetching later
+        features: listing.features || [],
+        leaseTerm: listing.lease_term || '',
+        postedBy: 'Student', // Will get from profiles later
+        isVerified: listing.is_verified,
+        availableFrom: listing.available_from || '',
+        busLines: listing.bus_lines || [],
+      }));
+
+      setListings(transformedListings);
+    } catch (error) {
+      console.error('Error fetching listings:', error);
+      setListings([]);
+    }
+  };
 
   const handleListingSelect = (listingId: string) => {
     console.log('Selected listing:', listingId);
@@ -54,7 +93,7 @@ const Map = () => {
           <section className="flex-1 p-8">
             <div className="container h-full">
               <MapComponent 
-                listings={mockListings}
+                listings={listings}
                 selectedCampus={selectedCampus}
                 onListingSelect={handleListingSelect}
               />
