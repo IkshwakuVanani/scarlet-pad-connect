@@ -86,41 +86,68 @@ All colors MUST be HSL.
   }
 
   .dark {
-    --background: 222.2 84% 4.9%;
-    --foreground: 210 40% 98%;
+    /* Warm dark backgrounds instead of harsh blue-gray */
+    --background: 220 13% 9%;
+    --foreground: 0 0% 95%;
 
-    --card: 222.2 84% 4.9%;
-    --card-foreground: 210 40% 98%;
+    /* Slightly lighter cards for better hierarchy */
+    --card: 220 13% 12%;
+    --card-foreground: 0 0% 95%;
 
-    --popover: 222.2 84% 4.9%;
-    --popover-foreground: 210 40% 98%;
+    --popover: 220 13% 12%;
+    --popover-foreground: 0 0% 95%;
 
-    --primary: 210 40% 98%;
-    --primary-foreground: 222.2 47.4% 11.2%;
+    /* Keep Rutgers scarlet as primary in dark mode */
+    --primary: 0 100% 45%;
+    --primary-foreground: 0 0% 98%;
+    --primary-glow: 0 100% 55%;
 
-    --secondary: 217.2 32.6% 17.5%;
-    --secondary-foreground: 210 40% 98%;
+    /* Warmer secondary colors */
+    --secondary: 220 13% 18%;
+    --secondary-foreground: 0 0% 90%;
 
-    --muted: 217.2 32.6% 17.5%;
-    --muted-foreground: 215 20.2% 65.1%;
+    /* Better muted colors for readability */
+    --muted: 220 13% 15%;
+    --muted-foreground: 0 0% 70%;
 
-    --accent: 217.2 32.6% 17.5%;
-    --accent-foreground: 210 40% 98%;
+    --accent: 220 13% 18%;
+    --accent-foreground: 0 0% 90%;
 
-    --destructive: 0 62.8% 30.6%;
-    --destructive-foreground: 210 40% 98%;
+    /* Softer destructive color */
+    --destructive: 0 75% 55%;
+    --destructive-foreground: 0 0% 98%;
 
-    --border: 217.2 32.6% 17.5%;
-    --input: 217.2 32.6% 17.5%;
-    --ring: 212.7 26.8% 83.9%;
-    --sidebar-background: 240 5.9% 10%;
-    --sidebar-foreground: 240 4.8% 95.9%;
-    --sidebar-primary: 224.3 76.3% 48%;
+    /* Subtle borders */
+    --border: 220 13% 20%;
+    --input: 220 13% 18%;
+    --ring: 0 100% 45%;
+
+    /* Custom dark mode tokens */
+    --success: 142 76% 45%;
+    --success-foreground: 0 0% 98%;
+    --warning: 48 96% 60%;
+    --warning-foreground: 220 13% 9%;
+
+    /* Enhanced gradients for dark mode */
+    --gradient-hero: linear-gradient(135deg, hsl(0 100% 45%), hsl(0 100% 55%));
+    --gradient-hero-cool: linear-gradient(135deg, hsl(0 100% 45% / 0.9), hsl(220 13% 25% / 0.6), hsl(220 13% 30% / 0.4));
+    --gradient-card: linear-gradient(145deg, hsl(220 13% 12%), hsl(220 13% 15%));
+    --gradient-trust: linear-gradient(90deg, hsl(142 76% 45%), hsl(142 76% 50%));
+
+    /* Enhanced shadows for dark mode */
+    --shadow-card: 0 4px 12px -2px hsl(0 0% 0% / 0.3);
+    --shadow-hero: 0 10px 30px -10px hsl(0 100% 45% / 0.4);
+    --shadow-trust: 0 2px 8px -2px hsl(142 76% 45% / 0.3);
+
+    /* Sidebar colors */
+    --sidebar-background: 220 13% 8%;
+    --sidebar-foreground: 0 0% 90%;
+    --sidebar-primary: 0 100% 45%;
     --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: 240 3.7% 15.9%;
-    --sidebar-accent-foreground: 240 4.8% 95.9%;
-    --sidebar-border: 240 3.7% 15.9%;
-    --sidebar-ring: 217.2 91.2% 59.8%;
+    --sidebar-accent: 220 13% 15%;
+    --sidebar-accent-foreground: 0 0% 90%;
+    --sidebar-border: 220 13% 20%;
+    --sidebar-ring: 0 100% 45%;
   }
 }
 
@@ -131,5 +158,30 @@ All colors MUST be HSL.
 
   body {
     @apply bg-background text-foreground;
+  }
+}
+
+@layer components {
+  /* Ensure dropdowns have proper backgrounds in dark mode */
+  .dark [data-radix-select-content],
+  .dark [data-radix-dropdown-menu-content],
+  .dark [data-radix-popover-content] {
+    @apply bg-card border-border shadow-lg;
+    backdrop-filter: blur(8px);
+  }
+  
+  /* Enhanced button contrast in dark mode */
+  .dark .bg-primary {
+    @apply shadow-lg shadow-primary/20;
+  }
+  
+  /* Better card contrast in dark mode */
+  .dark .bg-card {
+    @apply shadow-md shadow-black/10;
+  }
+  
+  /* Price text readability */
+  .dark .text-primary {
+    @apply font-semibold;
   }
 }
