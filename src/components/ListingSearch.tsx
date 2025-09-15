@@ -156,14 +156,14 @@ const ListingSearch = ({ onFiltersChange, onClear }: ListingSearchProps) => {
                   <Slider
                     value={filters.priceRange}
                     onValueChange={(value) => handleFilterChange('priceRange', value)}
-                    max={3000}
-                    min={500}
+                    max={4000}
+                    min={200}
                     step={50}
                     className="w-full"
                   />
                   <div className="flex justify-between text-xs text-muted-foreground mt-1">
                     <span>${filters.priceRange[0]}</span>
-                    <span>${filters.priceRange[1]}</span>
+                    <span>${filters.priceRange[1] >= 4000 ? '4000+' : filters.priceRange[1]}</span>
                   </div>
                 </div>
               </div>

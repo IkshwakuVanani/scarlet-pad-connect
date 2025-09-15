@@ -192,14 +192,14 @@ export function AppSidebar({ onFiltersChange, onCampusChange }: AppSidebarProps)
               <Slider
                 value={priceRange}
                 onValueChange={setPriceRange}
-                max={2000}
+                max={4000}
                 min={200}
                 step={50}
                 className="w-full"
               />
               <div className="flex justify-between text-sm text-muted-foreground">
                 <span>${priceRange[0]}/month</span>
-                <span>${priceRange[1]}/month</span>
+                <span>${priceRange[1] >= 4000 ? '4000+' : priceRange[1]}/month</span>
               </div>
             </div>
           </div>
