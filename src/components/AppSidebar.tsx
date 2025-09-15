@@ -7,6 +7,7 @@ import { Badge } from "@/components/ui/badge";
 import { Slider } from "@/components/ui/slider";
 import { Search, Filter, MapPin, DollarSign, Calendar, Bus } from "lucide-react";
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 
 interface AppSidebarProps {
   onCampusChange?: (campus: string) => void;
@@ -14,6 +15,7 @@ interface AppSidebarProps {
 
 export function AppSidebar({ onCampusChange }: AppSidebarProps) {
   const [priceRange, setPriceRange] = useState([400, 1200]);
+  const navigate = useNavigate();
   
   const campuses = [
     "College Avenue",
@@ -186,7 +188,11 @@ export function AppSidebar({ onCampusChange }: AppSidebarProps) {
           </div>
 
           {/* Search Button */}
-          <Button size="lg" className="w-full bg-gradient-hero hover:shadow-hero transition-all duration-300">
+          <Button 
+            size="lg" 
+            className="w-full bg-gradient-hero hover:shadow-hero transition-all duration-300"
+            onClick={() => navigate('/')}
+          >
             <Search className="h-5 w-5 mr-2" />
             Search Properties
           </Button>
