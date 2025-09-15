@@ -18,6 +18,7 @@ interface ListingInterest {
   profiles: {
     full_name: string | null;
     email: string;
+    net_id: string | null;
   } | null;
 }
 
@@ -49,18 +50,18 @@ const Roommates = () => {
 
       const { data: profilesData, error: profilesError } = await supabase
         .from('profiles')
-        .select('user_id, full_name, email');
+        .select('user_id, full_name, email, net_id');
 
       if (profilesError) throw profilesError;
 
       // Create a map of user profiles
-      const profileMap = new Map();
+      const profileMap = new Map<string, { user_id: string; full_name: string | null; email: string; net_id: string | null; }>();
       profilesData?.forEach(profile => {
         profileMap.set(profile.user_id, profile);
       });
 
       // Transform to match expected format
-      const transformedListings = (listingsData || []).map(listing => {
+        const transformedListings = (listingsData || []).map(listing => {
         const userProfile = profileMap.get(listing.user_id);
         return {
           id: listing.id,
@@ -73,7 +74,7 @@ const Roommates = () => {
           images: [], // Will implement image fetching later
           features: listing.features || [],
           leaseTerm: listing.lease_term || '',
-          postedBy: userProfile?.full_name || userProfile?.email || 'Student',
+          postedBy: userProfile?.full_name || userProfile?.net_id || userProfile?.email?.split('@')[0] || 'Student',
           isVerified: listing.is_verified,
           availableFrom: listing.available_from || '',
           busLines: listing.bus_lines || [],
@@ -102,7 +103,7 @@ const Roommates = () => {
       const userIds = Array.from(new Set(interests?.map(i => i.user_id) || []));
       const { data: profiles, error: profilesError } = await supabase
         .from('profiles')
-        .select('user_id, full_name, email')
+        .select('user_id, full_name, email, net_id')
         .in('user_id', userIds);
 
       if (profilesError) throw profilesError;
@@ -366,7 +367,7 @@ const Roommates = () => {
                                   {interest.profiles?.full_name || 'Student'}
                                 </p>
                                 <p className="text-sm text-muted-foreground truncate">
-                                  {interest.profiles?.email}
+                                  NetID: {interest.profiles?.net_id || interest.profiles?.email?.split('@')[0] || 'N/A'}
                                 </p>
                                 {interest.user_id === user?.id && (
                                   <Badge variant="secondary" className="text-xs mt-1">You</Badge>

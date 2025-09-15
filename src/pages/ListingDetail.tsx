@@ -32,6 +32,7 @@ interface Listing {
 interface Profile {
   full_name: string;
   email: string;
+  net_id: string;
 }
 
 const ListingDetail = () => {
@@ -64,7 +65,7 @@ const ListingDetail = () => {
       // Fetch profile of listing owner
       const { data: profileData, error: profileError } = await supabase
         .from('profiles')
-        .select('full_name, email')
+        .select('full_name, email, net_id')
         .eq('user_id', listingData.user_id)
         .single();
 
@@ -339,7 +340,7 @@ const ListingDetail = () => {
                           {profile?.full_name || 'Student'}
                         </div>
                         <div className="text-sm text-muted-foreground">
-                          NetID: {profile?.email?.split('@')[0]}
+                          NetID: {profile?.net_id || profile?.email?.split('@')[0] || 'N/A'}
                         </div>
                       </div>
                     </div>

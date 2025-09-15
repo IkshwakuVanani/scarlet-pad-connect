@@ -48,8 +48,9 @@ export default function Auth() {
     const email = formData.get('email') as string;
     const password = formData.get('password') as string;
     const fullName = formData.get('fullName') as string;
+    const netId = formData.get('netId') as string;
     
-    await signUp(email, password, fullName);
+    await signUp(email, password, fullName, netId);
     setIsLoading(false);
   };
 
@@ -117,7 +118,7 @@ export default function Auth() {
                 </form>
               </TabsContent>
               
-              <TabsContent value="signup">
+                <TabsContent value="signup">
                 <form onSubmit={handleSignUp} className="space-y-4">
                   <div className="space-y-2">
                     <Label htmlFor="fullName">Full Name</Label>
@@ -126,6 +127,16 @@ export default function Auth() {
                       name="fullName"
                       type="text"
                       placeholder="John Doe"
+                      required
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="netId">NetID</Label>
+                    <Input
+                      id="netId"
+                      name="netId"
+                      type="text"
+                      placeholder="jd123"
                       required
                     />
                   </div>
