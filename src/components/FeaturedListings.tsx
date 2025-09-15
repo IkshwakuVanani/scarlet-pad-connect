@@ -3,6 +3,7 @@ import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import ListingCard from "./ListingCard";
+import ListingSearch from "./ListingSearch";
 import { ArrowRight, Star } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
@@ -26,6 +27,7 @@ interface Listing {
 
 const FeaturedListings = () => {
   const [listings, setListings] = useState<Listing[]>([]);
+  const [filteredListings, setFilteredListings] = useState<Listing[]>([]);
   const [loading, setLoading] = useState(true);
   const { toast } = useToast();
 
@@ -44,6 +46,7 @@ const FeaturedListings = () => {
       if (error) throw error;
 
       setListings(data || []);
+      setFilteredListings(data || []);
     } catch (error) {
       console.error('Error fetching listings:', error);
       toast({
@@ -56,8 +59,74 @@ const FeaturedListings = () => {
     }
   };
 
+  const handleFiltersChange = (filters: any) => {
+    let filtered = [...listings];
+
+    // Search filter
+    if (filters.search) {
+      const searchLower = filters.search.toLowerCase();
+      filtered = filtered.filter(listing => 
+        listing.title.toLowerCase().includes(searchLower) ||
+        listing.location.toLowerCase().includes(searchLower) ||
+        (listing.description && listing.description.toLowerCase().includes(searchLower))
+      );
+    }
+
+    // Price range filter
+    if (filters.priceRange) {
+      filtered = filtered.filter(listing => 
+        listing.price >= filters.priceRange[0] && listing.price <= filters.priceRange[1]
+      );
+    }
+
+    // Campus filter
+    if (filters.campus) {
+      filtered = filtered.filter(listing => listing.campus === filters.campus);
+    }
+
+    // Bedrooms filter
+    if (filters.bedrooms) {
+      const bedroomCount = parseInt(filters.bedrooms);
+      filtered = filtered.filter(listing => 
+        bedroomCount === 4 ? listing.bedrooms >= 4 : listing.bedrooms === bedroomCount
+      );
+    }
+
+    // Bathrooms filter
+    if (filters.bathrooms) {
+      const bathroomCount = parseFloat(filters.bathrooms);
+      filtered = filtered.filter(listing => 
+        bathroomCount === 2.5 ? listing.bathrooms >= 2.5 : listing.bathrooms >= bathroomCount
+      );
+    }
+
+    // Features filter
+    if (filters.features && filters.features.length > 0) {
+      filtered = filtered.filter(listing => 
+        listing.features && filters.features.every((feature: string) => 
+          listing.features!.includes(feature)
+        )
+      );
+    }
+
+    // Bus lines filter
+    if (filters.busLines && filters.busLines.length > 0) {
+      filtered = filtered.filter(listing => 
+        listing.bus_lines && filters.busLines.some((busLine: string) => 
+          listing.bus_lines!.includes(busLine)
+        )
+      );
+    }
+
+    setFilteredListings(filtered);
+  };
+
+  const handleClearFilters = () => {
+    setFilteredListings(listings);
+  };
+
   // Transform database listings to match ListingCard expected format
-  const transformedListings = listings.map(listing => ({
+  const transformedListings = filteredListings.map(listing => ({
     id: listing.id,
     title: listing.title,
     price: listing.price,
@@ -89,7 +158,7 @@ const FeaturedListings = () => {
   return (
     <section className="py-16 bg-background">
       <div className="container">
-        <div className="text-center space-y-4 mb-12">
+        <div className="text-center space-y-4 mb-8">
           <Badge variant="secondary" className="inline-flex items-center space-x-2">
             <Star className="h-4 w-4 text-primary" />
             <span>Featured Properties</span>
@@ -101,6 +170,11 @@ const FeaturedListings = () => {
             Hand-picked properties from verified Rutgers students. Find your perfect home today.
           </p>
         </div>
+
+        <ListingSearch 
+          onFiltersChange={handleFiltersChange}
+          onClear={handleClearFilters}
+        />
 
         {transformedListings.length > 0 ? (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-12">

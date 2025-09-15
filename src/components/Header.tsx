@@ -47,7 +47,7 @@ const Header = () => {
           <a href="#" onClick={() => navigate('/roommates')} className="text-sm font-medium text-muted-foreground hover:text-primary transition-colors cursor-pointer">
             Roommates
           </a>
-          <a href="#" className="text-sm font-medium text-muted-foreground hover:text-primary transition-colors">
+          <a href="#" onClick={() => navigate('/help')} className="text-sm font-medium text-muted-foreground hover:text-primary transition-colors cursor-pointer">
             Help
           </a>
         </nav>

@@ -9,6 +9,8 @@ import Auth from "./pages/Auth";
 import Map from "./pages/Map";
 import Roommates from "./pages/Roommates";
 import CreateListing from "./pages/CreateListing";
+import Profile from "./pages/Profile";
+import Help from "./pages/Help";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -26,6 +28,8 @@ const App = () => (
             <Route path="/map" element={<Map />} />
             <Route path="/roommates" element={<Roommates />} />
             <Route path="/create-listing" element={<CreateListing />} />
+            <Route path="/profile" element={<Profile />} />
+            <Route path="/help" element={<Help />} />
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />
           </Routes>
