@@ -4,7 +4,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
-import { HelpCircle, Mail, MessageSquare, Shield, Home, Users, Search } from "lucide-react";
+import { HelpCircle, Mail, MessageSquare, Shield, Home, Users, Search, FileText } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 
 const Help = () => {
@@ -34,7 +34,7 @@ const Help = () => {
               <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12">
                 <Card className="hover:shadow-lg transition-shadow">
                   <CardHeader className="text-center pb-4">
-                    <Shield className="h-8 w-8 text-primary mx-auto mb-2" />
+                    <FileText className="h-8 w-8 text-primary mx-auto mb-2" />
                     <CardTitle className="text-lg">Terms of Service</CardTitle>
                   </CardHeader>
                   <CardContent className="text-center">
