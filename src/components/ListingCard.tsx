@@ -3,6 +3,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Heart, MapPin, Bed, Bath, Car, Wifi, Shield, Clock } from "lucide-react";
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 
 interface ListingCardProps {
   listing: {
@@ -25,6 +26,7 @@ interface ListingCardProps {
 
 const ListingCard = ({ listing }: ListingCardProps) => {
   const [isFavorited, setIsFavorited] = useState(false);
+  const navigate = useNavigate();
 
   const getFeatureIcon = (feature: string) => {
     switch (feature.toLowerCase()) {
@@ -150,7 +152,11 @@ const ListingCard = ({ listing }: ListingCardProps) => {
         </div>
 
         {/* CTA Button */}
-        <Button className="w-full bg-gradient-hero hover:shadow-hero transition-all duration-300" size="sm">
+        <Button 
+          className="w-full bg-gradient-hero hover:shadow-hero transition-all duration-300" 
+          size="sm"
+          onClick={() => navigate(`/listing/${listing.id}`)}
+        >
           View Details
         </Button>
       </CardContent>
