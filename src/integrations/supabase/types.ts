@@ -95,6 +95,39 @@ export type Database = {
         }
         Relationships: []
       }
+      payment_preferences: {
+        Row: {
+          auto_rent_payment: boolean | null
+          created_at: string
+          id: string
+          platform_fee_percentage: number | null
+          preferred_method: string
+          stripe_account_id: string | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          auto_rent_payment?: boolean | null
+          created_at?: string
+          id?: string
+          platform_fee_percentage?: number | null
+          preferred_method?: string
+          stripe_account_id?: string | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          auto_rent_payment?: boolean | null
+          created_at?: string
+          id?: string
+          platform_fee_percentage?: number | null
+          preferred_method?: string
+          stripe_account_id?: string | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
           created_at: string
@@ -117,6 +150,111 @@ export type Database = {
           email?: string
           full_name?: string | null
           id?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      rent_schedules: {
+        Row: {
+          created_at: string
+          due_day_of_month: number
+          id: string
+          is_active: boolean | null
+          landlord_id: string
+          lease_end: string
+          lease_start: string
+          listing_id: string
+          monthly_amount: number
+          payment_method: string
+          stripe_subscription_id: string | null
+          tenant_id: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          due_day_of_month: number
+          id?: string
+          is_active?: boolean | null
+          landlord_id: string
+          lease_end: string
+          lease_start: string
+          listing_id: string
+          monthly_amount: number
+          payment_method: string
+          stripe_subscription_id?: string | null
+          tenant_id: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          due_day_of_month?: number
+          id?: string
+          is_active?: boolean | null
+          landlord_id?: string
+          lease_end?: string
+          lease_start?: string
+          listing_id?: string
+          monthly_amount?: number
+          payment_method?: string
+          stripe_subscription_id?: string | null
+          tenant_id?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      transactions: {
+        Row: {
+          amount: number
+          created_at: string
+          currency: string
+          due_date: string | null
+          id: string
+          listing_id: string | null
+          metadata: Json | null
+          payment_method: string
+          platform_fee: number | null
+          recipient_user_id: string | null
+          status: string
+          stripe_payment_intent_id: string | null
+          stripe_subscription_id: string | null
+          transaction_type: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          amount: number
+          created_at?: string
+          currency?: string
+          due_date?: string | null
+          id?: string
+          listing_id?: string | null
+          metadata?: Json | null
+          payment_method: string
+          platform_fee?: number | null
+          recipient_user_id?: string | null
+          status?: string
+          stripe_payment_intent_id?: string | null
+          stripe_subscription_id?: string | null
+          transaction_type: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          amount?: number
+          created_at?: string
+          currency?: string
+          due_date?: string | null
+          id?: string
+          listing_id?: string | null
+          metadata?: Json | null
+          payment_method?: string
+          platform_fee?: number | null
+          recipient_user_id?: string | null
+          status?: string
+          stripe_payment_intent_id?: string | null
+          stripe_subscription_id?: string | null
+          transaction_type?: string
           updated_at?: string
           user_id?: string
         }
