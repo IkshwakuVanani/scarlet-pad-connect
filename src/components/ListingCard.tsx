@@ -5,6 +5,8 @@ import { Heart, MapPin, Bed, Bath, Car, Wifi, Shield, Clock } from "lucide-react
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
+import { useAuth } from "@/hooks/useAuth";
+import { useToast } from "@/hooks/use-toast";
 interface ListingCardProps {
   listing: {
     id: string;
@@ -25,9 +27,11 @@ interface ListingCardProps {
 }
 
 const ListingCard = ({ listing }: ListingCardProps) => {
-  const [isFavorited, setIsFavorited] = useState(false);
+  const [isInterested, setIsInterested] = useState(false);
   const navigate = useNavigate();
   const [coverUrl, setCoverUrl] = useState<string | null>(null);
+  const { user } = useAuth();
+  const { toast } = useToast();
 
   useEffect(() => {
     let isMounted = true;
@@ -47,6 +51,92 @@ const ListingCard = ({ listing }: ListingCardProps) => {
     load();
     return () => { isMounted = false; };
   }, [listing.id]);
+
+  // Check if user is interested in this listing
+  useEffect(() => {
+    const checkInterest = async () => {
+      if (!user) return;
+
+      try {
+        const { data, error } = await supabase
+          .from('listing_interests')
+          .select('id')
+          .eq('user_id', user.id)
+          .eq('listing_id', listing.id)
+          .single();
+
+        if (error && error.code !== 'PGRST116') { // PGRST116 is "not found" error
+          console.error('Error checking interest:', error);
+          return;
+        }
+
+        setIsInterested(!!data);
+      } catch (error) {
+        console.error('Error checking interest:', error);
+      }
+    };
+
+    checkInterest();
+  }, [user, listing.id]);
+
+  const toggleInterest = async () => {
+    if (!user) {
+      toast({
+        title: "Sign in required",
+        description: "Please sign in to show interest in listings",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    const wasInterested = isInterested;
+    
+    // Optimistic update
+    setIsInterested(!wasInterested);
+
+    try {
+      if (wasInterested) {
+        // Remove interest
+        const { error } = await supabase
+          .from('listing_interests')
+          .delete()
+          .eq('user_id', user.id)
+          .eq('listing_id', listing.id);
+
+        if (error) throw error;
+
+        toast({
+          title: "Interest removed",
+          description: "You're no longer interested in this listing",
+        });
+      } else {
+        // Add interest
+        const { error } = await supabase
+          .from('listing_interests')
+          .upsert([{ user_id: user.id, listing_id: listing.id }], {
+            onConflict: 'user_id,listing_id'
+          });
+
+        if (error) throw error;
+
+        toast({
+          title: "Interest added",
+          description: "You'll now see others interested in this listing in the Roommates tab",
+        });
+      }
+    } catch (error) {
+      console.error('Error toggling interest:', error);
+      
+      // Revert optimistic update on error
+      setIsInterested(wasInterested);
+      
+      toast({
+        title: "Error",
+        description: "Failed to update interest",
+        variant: "destructive",
+      });
+    }
+  };
 
   const getFeatureIcon = (feature: string) => {
     switch (feature.toLowerCase()) {
@@ -80,10 +170,10 @@ const ListingCard = ({ listing }: ListingCardProps) => {
           className="absolute top-2 right-2 bg-background/80 backdrop-blur-sm hover:bg-background/90"
           onClick={(e) => {
             e.preventDefault();
-            setIsFavorited(!isFavorited);
+            toggleInterest();
           }}
         >
-          <Heart className={`h-4 w-4 ${isFavorited ? 'fill-primary text-primary' : 'text-muted-foreground'}`} />
+          <Heart className={`h-4 w-4 ${isInterested ? 'fill-primary text-primary' : 'text-muted-foreground'}`} />
         </Button>
 
         {/* Badges */}
