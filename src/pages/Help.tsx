@@ -39,7 +39,14 @@ const Help = () => {
                     <p className="text-sm text-muted-foreground mb-4">
                       Learn how to create effective property listings
                     </p>
-                    <Button variant="outline" size="sm">
+                    <Button 
+                      variant="outline" 
+                      size="sm"
+                      onClick={() => {
+                        const faqSection = document.querySelector('[value="item-2"]');
+                        faqSection?.scrollIntoView({ behavior: 'smooth' });
+                      }}
+                    >
                       View Guide
                     </Button>
                   </CardContent>
@@ -54,7 +61,14 @@ const Help = () => {
                     <p className="text-sm text-muted-foreground mb-4">
                       Connect with fellow Rutgers students safely
                     </p>
-                    <Button variant="outline" size="sm">
+                    <Button 
+                      variant="outline" 
+                      size="sm"
+                      onClick={() => {
+                        const faqSection = document.querySelector('[value="item-3"]');
+                        faqSection?.scrollIntoView({ behavior: 'smooth' });
+                      }}
+                    >
                       Learn More
                     </Button>
                   </CardContent>
@@ -69,7 +83,14 @@ const Help = () => {
                     <p className="text-sm text-muted-foreground mb-4">
                       Stay safe while using our platform
                     </p>
-                    <Button variant="outline" size="sm">
+                    <Button 
+                      variant="outline" 
+                      size="sm"
+                      onClick={() => {
+                        const emergencySection = document.querySelector('.border-destructive\\/50');
+                        emergencySection?.scrollIntoView({ behavior: 'smooth' });
+                      }}
+                    >
                       Safety Tips
                     </Button>
                   </CardContent>
