@@ -166,22 +166,24 @@ All colors MUST be HSL.
   .dark [data-radix-select-content],
   .dark [data-radix-dropdown-menu-content],
   .dark [data-radix-popover-content] {
-    @apply bg-card border-border shadow-lg;
+    background-color: hsl(var(--card));
+    border: 1px solid hsl(var(--border));
+    box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
     backdrop-filter: blur(8px);
   }
   
   /* Enhanced button contrast in dark mode */
   .dark .bg-primary {
-    @apply shadow-lg shadow-primary/20;
+    box-shadow: 0 10px 15px -3px hsl(var(--primary) / 0.2), 0 4px 6px -4px hsl(var(--primary) / 0.2);
   }
   
   /* Better card contrast in dark mode */
   .dark .bg-card {
-    @apply shadow-md shadow-black/10;
+    box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
   }
   
   /* Price text readability */
   .dark .text-primary {
-    @apply font-semibold;
+    font-weight: 600;
   }
 }
