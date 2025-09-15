@@ -152,8 +152,19 @@ const Roommates = () => {
   const toggleInterest = async (listingId: string) => {
     if (!user) return;
 
+    const wasInterested = userInterests.has(listingId);
+    
+    // Optimistic update - update UI state immediately
+    const newUserInterests = new Set(userInterests);
+    if (wasInterested) {
+      newUserInterests.delete(listingId);
+    } else {
+      newUserInterests.add(listingId);
+    }
+    setUserInterests(newUserInterests);
+
     try {
-      if (userInterests.has(listingId)) {
+      if (wasInterested) {
         // Remove interest
         const { error } = await supabase
           .from('listing_interests')
@@ -168,10 +179,12 @@ const Roommates = () => {
           description: "You're no longer interested in this listing",
         });
       } else {
-        // Add interest
+        // Add interest - use upsert to handle duplicates gracefully
         const { error } = await supabase
           .from('listing_interests')
-          .insert([{ user_id: user.id, listing_id: listingId }]);
+          .upsert([{ user_id: user.id, listing_id: listingId }], {
+            onConflict: 'user_id,listing_id'
+          });
 
         if (error) throw error;
 
@@ -181,9 +194,14 @@ const Roommates = () => {
         });
       }
 
-      fetchRoommateData();
+      // Refresh data to sync with server
+      await fetchRoommateData();
     } catch (error) {
       console.error('Error toggling interest:', error);
+      
+      // Revert optimistic update on error
+      setUserInterests(userInterests);
+      
       toast({
         title: "Error",
         description: "Failed to update interest",
