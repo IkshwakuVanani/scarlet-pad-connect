@@ -34,19 +34,19 @@ const Help = () => {
               <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12">
                 <Card className="hover:shadow-lg transition-shadow">
                   <CardHeader className="text-center pb-4">
-                    <Home className="h-8 w-8 text-primary mx-auto mb-2" />
-                    <CardTitle className="text-lg">Posting Listings</CardTitle>
+                    <Shield className="h-8 w-8 text-primary mx-auto mb-2" />
+                    <CardTitle className="text-lg">Terms of Service</CardTitle>
                   </CardHeader>
                   <CardContent className="text-center">
                     <p className="text-sm text-muted-foreground mb-4">
-                      Learn how to create effective property listings
+                      Review our platform rules and legal agreements
                     </p>
                     <Button 
                       variant="outline" 
                       size="sm"
                       onClick={() => navigate('/terms')}
                     >
-                      View Guide
+                      View Terms
                     </Button>
                   </CardContent>
                 </Card>
