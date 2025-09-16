@@ -53,7 +53,12 @@ const HeroSection = () => {
                   <MapPin className="h-5 w-5 mr-2" />
                   View Map
                 </Button>
-                <Button size="lg" variant="outline" className="hover:bg-muted/50 transition-colors">
+                <Button 
+                  size="lg" 
+                  variant="outline" 
+                  className="hover:bg-muted/50 transition-colors"
+                  onClick={() => navigate('/')}
+                >
                   <Search className="h-5 w-5 mr-2" />
                   Browse Listings
                 </Button>
