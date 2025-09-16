@@ -237,7 +237,7 @@ const FeaturedListings = ({ filters }: FeaturedListingsProps) => {
   }
 
   return (
-    <section className="py-16 bg-background">
+    <section id="featured-listings" className="py-16 bg-background">
       <div className="container">
         <div className="text-center space-y-4 mb-8">
           <Badge variant="secondary" className="inline-flex items-center space-x-2">
