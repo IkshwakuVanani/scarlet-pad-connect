@@ -1,8 +1,8 @@
 project_id = "scarlet-pad-connect"
 
 [auth]
-site_url = "https://scarlet-pad-ikshwaku.fabled-crumb-5773.chatgpt.site"
-additional_redirect_urls = ["https://scarlet-pad-ikshwaku.fabled-crumb-5773.chatgpt.site/auth/callback", "http://localhost:5173/auth/callback"]
+site_url = "https://scarlet-pad-connect.vercel.app"
+additional_redirect_urls = ["https://scarlet-pad-connect.vercel.app/auth/callback", "http://localhost:5173/auth/callback"]
 enable_signup = true
 enable_anonymous_sign_ins = false
 

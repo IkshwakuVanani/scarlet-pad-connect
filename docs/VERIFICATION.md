@@ -4,6 +4,10 @@
 
 `npm ci`, strict TypeScript/production build, business-rule tests and actual PostgreSQL/PGlite policy tests pass. The migration fixtures cover both the original v2 schema and production membership/private Storage additions. The dependency audit reports zero known vulnerabilities.
 
+## Vercel hosting migration
+
+The user requested Vercel hosting without any design or layout changes. The migration modifies deployment configuration and documentation only. `src/`, `public/` and `index.html` are identical to the previously approved production commit `ebb9c9fa64b114ef92a98524504a0787f81178a2`; the compiled JavaScript and CSS asset hashes are unchanged. The production build and database tests pass with the Vercel configuration. Supabase's Site URL and exact Auth callback now use `https://scarlet-pad-connect.vercel.app`.
+
 ## Actual Supabase integration
 
 The project `wgsqvddfdrebmajgjklp` was inspected before changes: it was healthy and empty. All three tracked migrations are applied and match remote history. All five member tables have RLS. A private photo bucket enforces MIME/size and ownership rules.

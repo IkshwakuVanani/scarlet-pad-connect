@@ -2,7 +2,7 @@
   <h1>Scarlet Pad</h1>
   <p><strong>Find your place. Find your people.</strong></p>
   <p>A housing and roommate companion I built for the Rutgers–New Brunswick community.</p>
-  <p><a href="https://scarlet-pad-ikshwaku.fabled-crumb-5773.chatgpt.site"><strong>Open Scarlet Pad ↗</strong></a> · <a href="#run-it-locally">Run locally</a> · <a href="docs/VERIFICATION.md">Verification</a></p>
+  <p><a href="https://scarlet-pad-connect.vercel.app"><strong>Open Scarlet Pad ↗</strong></a> · <a href="#run-it-locally">Run locally</a> · <a href="docs/VERIFICATION.md">Verification</a></p>
 </div>
 
 <img src="docs/screenshots/overview.png" alt="Scarlet Pad’s live landing page with Rutgers email sign-in" width="100%" />
@@ -49,7 +49,7 @@ I use the canonical Auth record for membership checks rather than editable profi
 
 ## Run it locally
 
-I use Node 22.18+ and npm.
+I use Node 22 LTS (22.18+) and npm, matching the Vercel build environment.
 
 ```sh
 npm ci
@@ -68,7 +68,9 @@ The production build uses the browser-safe project configuration in `.env.produc
 
 ## Deploy the repository
 
-The build command is `npm run build`, and the static output is `dist/`. I include route indexes and SPA fallback configuration for deep links. Vercel and Netlify configuration files are included, so the same repository can be imported there without changing application code.
+I deploy this repository on **Vercel**, connected directly to GitHub. Pushes to `main` build and publish production at [scarlet-pad-connect.vercel.app](https://scarlet-pad-connect.vercel.app); other branches receive preview deployments. The project is `scarlet-pad-connect` in my `ikshwaku-s-projects` team.
+
+Vercel runs `npm ci` and `npm run build` on Node 22 LTS and serves `dist/`. My `vercel.json` includes SPA fallback routing for direct links, including the Auth callback. Hosting changes do not change the interface, layout or application features.
 
 The current live app is connected to Supabase project `wgsqvddfdrebmajgjklp`. I track its schema under `supabase/migrations` and its Auth URLs in `supabase/config.toml`. When deploying to a different origin, I update the Auth Site URL and allowlist that origin's `/auth/callback` URL before testing sign-in.
 
