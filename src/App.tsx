@@ -62,6 +62,7 @@ import {
 } from "./components/Forms";
 import { Inbox, Resources, Roommates } from "./components/CommunityPages";
 import Planner from "./components/Planner";
+import GuestLanding from "./components/GuestLanding";
 const HomeMap = lazy(() => import("./components/HomeMap"));
 type SearchPreset = { name: string; filters: Filters };
 const navigation = [
@@ -156,6 +157,13 @@ function Workspace() {
         .eq("id", detail.id)
         .eq("user_id", c.user.id);
       if (error) throw error;
+      if (detail.photo_path) {
+        const { error: photoError } = await supabase!.storage
+          .from("pad-listing-photos")
+          .remove([detail.photo_path]);
+        if (photoError)
+          toast.info("Listing removed. Its photo cleanup will need a retry.");
+      }
       setDetail(null);
       await c.refresh();
       toast.success("Listing removed");
@@ -353,6 +361,8 @@ function Workspace() {
             >
               {c.error}
             </Empty>
+          ) : !c.user && !c.demo && path !== "/resources" ? (
+            <GuestLanding onSignIn={() => setAuth(true)} />
           ) : isHomes ? (
             <>
               {!isSaved ? (
@@ -884,7 +894,11 @@ function Workspace() {
             {detail.photo_url ? (
               <img
                 src={detail.photo_url}
-                alt="Illustrative apartment interior"
+                alt={
+                  c.demo
+                    ? "Illustrative apartment interior"
+                    : `Photo provided for ${detail.title}`
+                }
               />
             ) : (
               <House size={50} />

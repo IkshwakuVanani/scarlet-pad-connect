@@ -2990,3 +2990,64 @@ legend {
     min-height: 28px;
   }
 }
+.guest-hero {
+  margin-top: 30px;
+  min-height: 355px;
+}
+.guest-hero .hero-copy {
+  padding-top: 36px;
+}
+.guest-hero .hero-copy > .button {
+  margin-top: 23px;
+}
+.guest-proof {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  font-size: 10px !important;
+  margin-top: 16px;
+}
+.guest-features {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 22px;
+}
+.guest-features .panel {
+  padding: 25px;
+}
+.guest-features h2 {
+  font-size: 18px;
+  line-height: 1.5;
+}
+.guest-features p {
+  font-size: 12px;
+  line-height: 1.9;
+  color: #5d694e;
+  margin-top: 13px;
+}
+@media (max-width: 1050px) {
+  .guest-features {
+    grid-template-columns: 1fr;
+  }
+  .guest-features .panel {
+    padding: 24px;
+  }
+  .guest-hero .hero-copy {
+    padding-top: 30px;
+  }
+}
+@media (max-width: 580px) {
+  .guest-hero {
+    margin-top: 22px;
+  }
+  .guest-hero .hero-copy {
+    padding-top: 30px;
+  }
+  .guest-hero .hero-copy > .button {
+    font-size: 11px;
+    padding: 12px;
+  }
+  .guest-hero h1 {
+    font-size: 37px;
+  }
+}

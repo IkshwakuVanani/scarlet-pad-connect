@@ -20,6 +20,7 @@ export interface Home {
   description: string;
   features: string[];
   photo_url: string | null;
+  photo_path?: string | null;
   latitude: number | null;
   longitude: number | null;
   created_at: string;

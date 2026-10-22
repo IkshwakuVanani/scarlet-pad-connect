@@ -46,3 +46,11 @@ Payments: removed from active product. Retire previously deployed legacy payment
 3. Recruit legitimate listing posters and moderation staff; add report/block and review workflows before public recruitment. No fabricated verified listings, members, counts, reviews or availability.
 4. Add private image uploads with validation, message threads, configurable annual Rutgers calendars and official building data under suitable usage permissions.
 5. Add verified availability and safety tools with an explicit review process. Keep financial flows out until properly implemented.
+
+## Live integration update — October 22, 2026
+
+The user supplied Supabase project `wgsqvddfdrebmajgjklp` and authorized live setup, deployment, retirement of the private review, GitHub About URL changes, and a first-person README as Ikshwaku Vanani. The project was empty and healthy. The schema, exact Rutgers membership enforcement, private photo bucket and index migrations are installed. Their local migration versions match remote history. Auth confirmation, callback URLs and the Before User Created hook are configured through the authenticated Supabase CLI. Codex MCP is registered and OAuth-authenticated; the broken global Codex CLI installation was repaired.
+
+The old review address has been retired by moving the existing deployment to `https://scarlet-pad-ikshwaku.fabled-crumb-5773.chatgpt.site` and replacing its sample-only artifact with the real repository application. Do not create a duplicate review site. Live guests see a sign-in landing page; real member inventory is never replaced with fictional fallback content. Local development without configuration retains the labeled sample board.
+
+Hosted Auth, PostgREST, private Storage, listing creation/update, ownership, private plans/saves, hidden profiles, accepted connection contact access and browser member sessions were exercised with temporary synthetic accounts. Clean up all temporary accounts, sessions and photos after browser verification. Production email delivery still depends on an SMTP provider; do not disable email confirmation or fake verification to bypass that requirement. The user has been asked to configure SMTP securely in the Supabase dashboard.

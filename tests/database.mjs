@@ -28,6 +28,26 @@ for (const [i, email] of [
     "insert into auth.users(id,email,email_confirmed_at) values($1,$2,$3)",
     [ids[i], email, i === 3 ? null : "2026-01-01"],
   );
+await db.exec(`create schema storage;
+create table storage.buckets(id text primary key,name text,public boolean,file_size_limit bigint,allowed_mime_types text[]);
+create table storage.objects(id uuid primary key default gen_random_uuid(),bucket_id text references storage.buckets(id),name text);
+alter table storage.objects enable row level security;
+create function storage.foldername(name text) returns text[] language sql immutable as $$ select (string_to_array(name,'/'))[1:array_length(string_to_array(name,'/'),1)-1] $$;
+grant usage on schema storage to authenticated;
+grant select,insert,delete on storage.objects to authenticated;`);
+const productionMigration = readdirSync("supabase/migrations").find((f) =>
+  f.endsWith("_production_membership_and_storage.sql"),
+);
+await db.exec(
+  readFileSync(`supabase/migrations/${productionMigration}`, "utf8"),
+);
+await assert.rejects(
+  () =>
+    db.query(
+      "insert into auth.users(id,email,email_confirmed_at) values(gen_random_uuid(),'outside@other.edu',now())",
+    ),
+  /Rutgers email/,
+);
 async function as(user, sql) {
   await db.exec("reset role");
   await db.query("select set_config('request.jwt.claim.sub',$1,false)", [
@@ -141,8 +161,8 @@ assert.equal(
   null,
 );
 await db.exec("reset role");
-await db.query("update auth.users set email=$1 where id=$2", [
-  "a@elsewhere.edu",
+await db.query("update auth.users set banned_until=$1 where id=$2", [
+  "2099-01-01",
   ids[0],
 ]);
 assert.equal(
@@ -174,5 +194,5 @@ assert.deepEqual(hook.rows[0].result, {});
 await db.exec("reset role");
 await db.close();
 console.log(
-  "PASS: database migration, membership, ownership, private plans/saves, hidden profiles, consent, contact RPC, sender/recipient permissions and changed-email revocation.",
+  "PASS: database migration, membership, ownership, private plans/saves, hidden profiles, consent, contact RPC, sender/recipient permissions account revocation, signup restriction and private Storage.",
 );

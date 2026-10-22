@@ -116,7 +116,11 @@ export function HomeCard({
           {h.photo_url ? (
             <img
               src={h.photo_url}
-              alt="Illustrative apartment interior"
+              alt={
+                demo
+                  ? "Illustrative apartment interior"
+                  : `Photo provided for ${h.title}`
+              }
               loading="lazy"
               onError={(e) => {
                 e.currentTarget.style.display = "none";

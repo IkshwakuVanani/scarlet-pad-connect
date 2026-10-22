@@ -18,8 +18,10 @@ export function useCommunity() {
   const [authLoading, setAuthLoading] = useState(!!supabase);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
-  const [homes, setHomes] = useState<Home[]>(demoHomes);
-  const [roommates, setRoommates] = useState<Roommate[]>(demoRoommates);
+  const [homes, setHomes] = useState<Home[]>(supabase ? [] : demoHomes);
+  const [roommates, setRoommates] = useState<Roommate[]>(
+    supabase ? [] : demoRoommates,
+  );
   const [saves, setSaves] = useState<string[]>(() =>
     readLocal("scarlet-demo-saves", []),
   );
@@ -28,7 +30,7 @@ export function useCommunity() {
     readLocal("scarlet-demo-plan", defaultPlan),
   );
   const generation = useRef(0);
-  const demo = !user;
+  const demo = !supabase;
   useEffect(() => {
     if (!supabase) return;
     const accept = (u: User | null) => {
@@ -52,11 +54,13 @@ export function useCommunity() {
     const run = ++generation.current;
     setError("");
     if (!user || !supabase) {
-      setHomes(demoHomes);
-      setRoommates(demoRoommates);
+      setHomes(supabase ? [] : demoHomes);
+      setRoommates(supabase ? [] : demoRoommates);
       setConnections([]);
-      setSaves(readLocal("scarlet-demo-saves", []));
-      setPlan(readLocal("scarlet-demo-plan", defaultPlan));
+      setSaves(supabase ? [] : readLocal("scarlet-demo-saves", []));
+      setPlan(
+        supabase ? defaultPlan : readLocal("scarlet-demo-plan", defaultPlan),
+      );
       setLoading(false);
       return;
     }
@@ -92,7 +96,23 @@ export function useCommunity() {
       setLoading(false);
       return;
     }
-    setHomes(results[0].data as Home[]);
+    const loadedHomes = results[0].data as Home[];
+    const paths = loadedHomes.flatMap((h) =>
+      h.photo_path ? [h.photo_path] : [],
+    );
+    if (paths.length) {
+      const { data: images, error: imageError } = await supabase.storage
+        .from("pad-listing-photos")
+        .createSignedUrls(paths, 3600);
+      if (run !== generation.current) return;
+      if (imageError)
+        toast.error("Some home photos could not be loaded. Try refreshing.");
+      const urls = new Map((images || []).map((i) => [i.path, i.signedUrl]));
+      loadedHomes.forEach((h) => {
+        if (h.photo_path) h.photo_url = urls.get(h.photo_path) || null;
+      });
+    }
+    setHomes(loadedHomes);
     setRoommates(results[1].data as Roommate[]);
     setSaves((results[2].data || []).map((x) => x.listing_id));
     setConnections(results[3].data as Connection[]);
