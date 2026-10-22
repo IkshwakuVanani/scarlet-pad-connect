@@ -1,9 +1,20 @@
 # Live deployment
 
-Application: https://scarlet-pad-ikshwaku.fabled-crumb-5773.chatgpt.site
+Application: https://scarlet-pad-connect.vercel.app
+Hosting: Vercel, project `scarlet-pad-connect` (`prj_Q3KuBAJc0wRfLSr5gIHWkyZcLyaF`), team `ikshwaku-s-projects` (`team_yRaT1DnZFVzTTk7I7W12izSu`).
 Supabase project: `wgsqvddfdrebmajgjklp` (`scarlet-pad-connect`, us-east-1).
 
-The database migrations are applied, RLS is enabled on all member tables, the private photo bucket is configured, and Auth confirmation/signup restrictions/callback URLs are configured. The checked-in `.env.production` contains only browser-safe publishable configuration. The deployed artifact is built from this repository's application source, not the old standalone sample review.
+The database migrations are applied, RLS is enabled on all member tables, the private photo bucket is configured, and Auth confirmation/signup restrictions/callback URLs are configured. The checked-in `.env.production` contains only browser-safe publishable configuration. Vercel builds the actual application from this GitHub repository. The previous ChatGPT Sites hosting is retired; the application design and layout are unchanged.
+
+## Vercel deployment
+
+The Vercel project is linked to `IkshwakuVanani/scarlet-pad-connect`. Production tracks `main`; feature branches create previews. Builds use Node 22 LTS, install with `npm ci`, build with `npm run build`, and publish `dist/`. `vercel.json` handles deep links and `/auth/callback`. The public production URL is accessible without Vercel login; preview deployments retain Vercel Authentication.
+
+Project dashboard: https://vercel.com/ikshwaku-s-projects/scarlet-pad-connect
+
+The Supabase production Site URL and exact callback URL point to the Vercel production domain. Local development remains allowlisted at `http://localhost:5173/auth/callback`. Additional preview domains need their exact callback URL allowlisted before testing email sign-in there. Never allow all `*.vercel.app` origins.
+
+The public Supabase URL and publishable key are loaded from `.env.production` at build time. No private Supabase or Vercel token is needed by the browser, and no CLI authentication files are committed. `.vercel/` is ignored.
 
 ## Remaining email-delivery setup
 
@@ -13,7 +24,7 @@ The user has been asked which provider to configure or to enter SMTP credentials
 
 ## Deploy elsewhere
 
-`npm ci && npm run build` creates `dist/`. Vercel and Netlify configuration is included. The production configuration is build-time configuration; change the public Supabase project values only when deploying against a different owned project.
+`npm ci && npm run build` creates `dist/`. The production configuration is build-time configuration; change the public Supabase project values only when deploying against a different owned project.
 
 For a different hosting origin, update `auth.site_url` and `auth.additional_redirect_urls` in `supabase/config.toml`, review the diff, and push it through the authenticated CLI:
 
