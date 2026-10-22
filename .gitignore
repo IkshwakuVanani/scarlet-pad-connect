@@ -30,3 +30,6 @@ output/
 .playwright-cli/
 .supabase/
 supabase/.temp/
+
+# Browser publishable configuration only; this contains no service secrets.
+!.env.production

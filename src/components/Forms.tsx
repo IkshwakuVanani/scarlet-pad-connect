@@ -129,6 +129,7 @@ export function AuthModal({ close }: { close: () => void }) {
   );
 }
 export function ListingForm({ c, close }: { c: Community; close: () => void }) {
+  const [photo, setPhoto] = useState<File | null>(null);
   const [pin, setPin] = useState<[number, number] | null>(null);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState("");
@@ -139,7 +140,22 @@ export function ListingForm({ c, close }: { c: Community; close: () => void }) {
     setError("");
     const data = new FormData(e.currentTarget);
     const features = data.getAll("features").map(String);
+    let photoPath: string | null = null;
     try {
+      if (photo) {
+        if (
+          !["image/jpeg", "image/png", "image/webp"].includes(photo.type) ||
+          photo.size > 5 * 1024 * 1024
+        )
+          throw new Error("Choose a JPEG, PNG, or WebP photo under 5 MB.");
+        const extension =
+          photo.type === "image/jpeg" ? "jpg" : photo.type.split("/")[1];
+        photoPath = `${c.user.id}/${crypto.randomUUID()}.${extension}`;
+        const { error: uploadError } = await requireBackend()
+          .storage.from("pad-listing-photos")
+          .upload(photoPath, photo, { contentType: photo.type, upsert: false });
+        if (uploadError) throw uploadError;
+      }
       const { error } = await requireBackend()
         .from("pad_listings")
         .insert({
@@ -155,6 +171,7 @@ export function ListingForm({ c, close }: { c: Community; close: () => void }) {
           available_from: data.get("available_from"),
           description: data.get("description"),
           features,
+          photo_path: photoPath,
           latitude: pin?.[0] ?? null,
           longitude: pin?.[1] ?? null,
         });
@@ -163,6 +180,10 @@ export function ListingForm({ c, close }: { c: Community; close: () => void }) {
       toast.success("Your home is on the board");
       close();
     } catch {
+      if (photoPath)
+        await requireBackend()
+          .storage.from("pad-listing-photos")
+          .remove([photoPath]);
       setError(
         "Could not publish this home. Check your details and try again.",
       );
@@ -293,6 +314,18 @@ export function ListingForm({ c, close }: { c: Community; close: () => void }) {
             ))}
           </div>
         </fieldset>
+        <label className="field">
+          Home photo (optional)
+          <input
+            type="file"
+            accept="image/jpeg,image/png,image/webp"
+            onChange={(e) => setPhoto(e.target.files?.[0] || null)}
+          />
+          <small className="fineprint">
+            JPEG, PNG or WebP, up to 5 MB. Use a photo you have permission to
+            share. Photos are stored privately for Rutgers members.
+          </small>
+        </label>
         <details className="location-picker">
           <summary>Add a neighborhood pin (optional)</summary>
           <p className="fineprint">
@@ -317,8 +350,9 @@ export function ListingForm({ c, close }: { c: Community; close: () => void }) {
         </label>
         <p className="fineprint">
           Your email and precise address are not published. Members can send
-          connection requests. Photo uploads and listing review are planned; new
-          homes display a neutral placeholder.
+          connection requests. Listings without a photo display a neutral
+          placeholder. Confirm the details directly with interested members;
+          Scarlet Pad does not verify properties.
         </p>
         {error && (
           <p role="alert" className="form-error">

@@ -1,61 +1,95 @@
-# Scarlet Pad
+<div align="center">
+  <h1>Scarlet Pad</h1>
+  <p><strong>Find your place. Find your people.</strong></p>
+  <p>A housing and roommate companion I built for the Rutgers–New Brunswick community.</p>
+  <p><a href="https://scarlet-pad-ikshwaku.fabled-crumb-5773.chatgpt.site"><strong>Open Scarlet Pad ↗</strong></a> · <a href="#run-it-locally">Run locally</a> · <a href="docs/VERIFICATION.md">Verification</a></p>
+</div>
 
-An independent housing and roommate companion for Rutgers–New Brunswick, rebuilt from the original Lovable project. Find off-campus homes, compare costs, meet prospective roommates, and prepare for on-campus selection in a coherent, responsive workspace.
+<img src="docs/screenshots/overview.png" alt="Scarlet Pad’s live landing page with Rutgers email sign-in" width="100%" />
 
-[Open the private review](https://scarlet-pad-review-ikshwaku.fabled-crumb-5773.chatgpt.site) · [Desktop screenshot](docs/screenshots/desktop.png) · [Mobile screenshot](docs/screenshots/mobile.png)
+I'm **Ikshwaku Vanani**, and I built Scarlet Pad to make finding a place around Rutgers feel less scattered. I wanted one place to explore housing, compare the real monthly costs, meet potential roommates, and keep track of the on-campus selection process.
 
-## Run locally
+I designed the app around the decisions I would want to make before calling somewhere home: what I can afford, where I want to live, who I want to live with, and what I need to do next.
 
-Node 22.12+ and npm are required (Node 22.18+ recommended for the test runner).
+## A closer look
+
+<table>
+  <tr>
+    <td width="68%"><img src="docs/screenshots/planner-preview.png" alt="A cropped preview of the private housing planner" width="100%" /></td>
+    <td width="32%"><img src="docs/screenshots/mobile-preview.png" alt="Scarlet Pad’s mobile landing page" width="100%" /></td>
+  </tr>
+</table>
+
+_These are cropped interface captures. Planner values are examples; they are not official housing advice or records from real students._
+
+## What I built
+
+- **Housing discovery:** campus, rent, bedroom, lease and amenity filters, sorting, and an OpenStreetMap view with optional neighborhood pins.
+- **A practical shortlist:** saved homes and side-by-side comparisons for up to three places, including estimated utilities.
+- **Private listing photos:** JPEG, PNG and WebP uploads with size limits, member access controls and short-lived image URLs.
+- **Roommate discovery:** opt-in profiles with budget, campus, schedule and shared-space preferences. I can pause my profile without deleting it.
+- **Connections with consent:** requests and an inbox, with Rutgers email contact details shared only after acceptance.
+- **An on-campus planner:** a private checklist, group worksheet, selection appointment and text export.
+- **Rutgers email membership:** passwordless sign-in and server-enforced membership at `rutgers.edu` and `scarletmail.rutgers.edu`.
+
+I keep member homes and profiles behind sign-in. The live app does not fill an empty community with fictional listings. For local design work, running without Supabase configuration opens an explicitly labeled sample board.
+
+## How I built it
+
+| Layer     | Stack                                                                                         |
+| --------- | --------------------------------------------------------------------------------------------- |
+| Interface | React, TypeScript, Vite, Radix Dialog, Lucide, custom responsive CSS                          |
+| Identity  | Supabase Auth with confirmed Rutgers email and a signup allowlist                             |
+| Data      | Supabase Postgres, row-level security and consent-aware contact access                        |
+| Photos    | Private Supabase Storage with file-size and MIME restrictions                                 |
+| Maps      | Leaflet and OpenStreetMap                                                                     |
+| Checks    | Strict TypeScript, Node tests, PostgreSQL/PGlite, live integration checks, Playwright and axe |
+
+I use the canonical Auth record for membership checks rather than editable profile metadata. Shortlists and plans belong to their owners, hidden roommate profiles stay hidden, and an unrelated member cannot read someone else's connection request. There is no service-role key in the browser bundle.
+
+## Run it locally
+
+I use Node 22.18+ and npm.
 
 ```sh
 npm ci
 npm run dev
 ```
 
-Open the URL printed by Vite. With no environment variables, the app runs an explicitly labeled sample board. Sample homes, people, prices, photos and locations are fictional; no sample can be booked, published or contacted. Sample saves and planner data persist only in browser storage. Saved filter presets are device-local in both modes; they do not send email alerts.
+Development mode opens a local sample board by default. To work against an owned Supabase project, copy `.env.example` to `.env.local` and set its browser URL and publishable key.
 
 ```sh
-npm test       # business rules and real PostgreSQL authorization tests in PGlite
-npm run build # strict TypeScript + production Vite bundle
+npm test
+npm run build
 npm run preview
 ```
 
-## Included
+The production build uses the browser-safe project configuration in `.env.production`. That file contains a **publishable** key, which is intentionally public; it is not an administrative credential. Database and Storage policies enforce access independently of the key. I keep all private credentials out of Git.
 
-- Search by text, campus, rent budget, bedrooms, lease and amenities; sorting and OpenStreetMap neighborhood exploration.
-- Private shortlists and up to three homes compared side by side, including estimated utilities.
-- Authenticated listing creation and owner deletion; precise address is not required. An optional neighborhood pin places a home on the map without requiring an exact address. New listings use a neutral placeholder until private photo uploads are implemented.
-- Opt-in roommate profiles with lifestyle preferences, campus and budget filters, and a pause-visibility setting.
-- Consent-based connection requests and inbox. Rutgers email contact details are returned only for accepted requests to their participants.
-- Personal housing checklist, group worksheet, selection appointment, persistence and text export.
-- Practical housing resources and clear distinctions between this independent tool and Rutgers' official processes.
+## Deploy the repository
 
-## Live community setup
+The build command is `npm run build`, and the static output is `dist/`. I include route indexes and SPA fallback configuration for deep links. Vercel and Netlify configuration files are included, so the same repository can be imported there without changing application code.
 
-No accessible Supabase project was available through the connected account during development. Hosted authentication, SMTP delivery and multi-account flows have **not** been tested against a live Supabase service. Database policies have been executed and tested in local PostgreSQL (PGlite).
+The current live app is connected to Supabase project `wgsqvddfdrebmajgjklp`. I track its schema under `supabase/migrations` and its Auth URLs in `supabase/config.toml`. When deploying to a different origin, I update the Auth Site URL and allowlist that origin's `/auth/callback` URL before testing sign-in.
 
-1. Use an owned Supabase project. Review and run the single SQL file under `supabase/migrations`. It supports a fresh project and retains legacy records on upgrades while revoking legacy Data API grants. Historical migrations in `docs/legacy-migrations` are archival: they contain invalid/duplicate policies and must not be replayed on a fresh database.
-2. Enable email confirmation and configure a production SMTP provider. In Auth Hooks, enable the **Before User Created** hook `private.pad_before_user_created`. Its configuration is included in `supabase/config.toml` for local Supabase. Hosted hook configuration must also be set in the dashboard. Keep anonymous sign-ins disabled. This hook rejects non-Rutgers new accounts; row policies independently reject nonmember access even if the hook is omitted.
-3. Set Auth Site URL to the deployment origin and allowlist its `/auth/callback` URL. Development callback: `http://localhost:5173/auth/callback`. The PKCE magic link should be opened in the same browser that requested it.
-4. Copy `.env.example` to `.env.local`, then provide `VITE_SUPABASE_URL` and `VITE_SUPABASE_PUBLISHABLE_KEY`. Build again. These are browser configuration values, not secrets. Never use a secret or service-role key.
-5. Test a complete login/logout sequence and listing, profile, connection acceptance and contact visibility using two consenting Rutgers accounts before opening community access.
-6. If upgrading an existing hosted project, back up data first. Apply the v2 SQL once through the SQL editor or a reviewed migration process. Preserve/repair remote migration history separately; do not blindly reset the database. Retire old deployed `create-payment` and `create-subscription` functions; source stubs return 410, but modifying source does not disable an already deployed function. The v2 UI never calls them.
+A new Supabase project needs the tracked migrations applied in order, email confirmation enabled, the signup hook configured, and a production SMTP sender. Supabase's built-in sender is restricted to project-team addresses. See [deployment details](docs/LAUNCH.md) for the current email-delivery requirement and exact setup.
 
-### Rutgers authentication means exactly what is enforced
+For an explicit integration check against the owned live project, I use:
 
-Email membership requires a confirmed address at `rutgers.edu` or `scarletmail.rutgers.edu`. Policies look up the canonical Auth user, so a changed email or banned account loses access. Typed NetIDs, generic .edu addresses and editable user metadata cannot grant membership.
+```sh
+node scripts/live-smoke.mjs
+```
 
-Email ownership **does not verify current student enrollment**. Strict current-student access needs an approved institutional integration with trusted affiliation claims. Optional SAML sign-in is wired through `VITE_RUTGERS_SSO_PROVIDER_ID`; configure a real institution-approved provider and map/validate trusted student claims before calling the service student-verified. Rutgers CAS is not impersonated or enabled by a cosmetic sign-in button.
+That script requires an authenticated Supabase CLI. It creates temporary synthetic accounts, exercises Auth/PostgREST/Storage and privacy rules, and removes its test records. It never logs an admin key or sends verification emails.
 
-## Deployment
+## What I keep separate
 
-The app produces static assets in `dist/`. Configure SPA fallback to `index.html` for `/saved`, `/planner`, `/roommates`, `/inbox`, `/resources` and `/auth/callback` (a `_redirects` file is supplied for hosts supporting it). Serve assets over HTTPS. Vite `VITE_*` variables must be present at **build time**, not added only to the static server afterwards.
+Scarlet Pad is my independent project, not an official Rutgers service. Rutgers Residence Life still manages on-campus applications and room assignments. My planner helps organize preparation; it does not promise a selection outcome.
 
-External requests in sample mode are limited to Google Fonts and OpenStreetMap tiles; housing photography is served locally. For stricter privacy/offline use, self-host the fonts and disable the external basemap. No analytics or advertising SDK is included.
+Confirming a Rutgers email proves control of that address, not current enrollment or the legitimacy of a property. I don't label homes as verified, process rent payments, or manufacture availability. Official NetID access would require an institution-approved integration and trusted affiliation checks.
 
-A GitHub Actions workflow runs tests and the production build. This replacement is developed on `codex/scarlet-pad-rebuild`; the original remains recoverable in main and Git history.
+I keep the [project notes](docs/PROJECT_MEMORY.md), [launch details](docs/LAUNCH.md), [verification results](docs/VERIFICATION.md) and [image sources](docs/ASSETS.md) alongside the code.
 
-## Product memory and roadmap
+---
 
-See [project memory](docs/PROJECT_MEMORY.md), [launch notes](docs/LAUNCH.md) and [asset sources](docs/ASSETS.md). The app does not predict guaranteed Rutgers housing outcomes, verify properties, collect payments, or manufacture availability. Its planner deliberately avoids presenting past 2026 dates as upcoming 2027 deadlines.
+Built by **Ikshwaku Vanani**.
